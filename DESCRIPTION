@@ -1,10 +1,10 @@
 Package: sgboost
-Title: What the Package Does (One Line, Title Case)
+Title: Sparse-group boosting in R: An extension for mboost
 Version: 0.0.0.9000
 Authors@R: 
     person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: Implements sparse-group boosting in R. A formula interface is provided, as well as funnctionality for model interpretability and visualization.
+Description: Implements sparse-group boosting in R in conjunction with the mboost package. A formula interface is provided, as well as funnctionality for model interpretability and visualization.
 Imports: dplyr
 License: MIT + file LICENSE
 Encoding: UTF-8
