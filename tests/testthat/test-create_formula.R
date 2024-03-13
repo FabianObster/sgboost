@@ -1,4 +1,4 @@
-test_that("multiplication works", {
+test_that("create_formula works", {
   expect_error(create_formula(group_df = 'group'),
                'group_df must be a data.frame')
   expect_error(create_formula(alpha = '0.5'),
