@@ -1,6 +1,13 @@
 #' Create a sparse-group boosting formula
 #'
-#' @param alpha mixing parameter
+#' @description
+#' Creates a mboost formula that allows to fit a sparse group boosting model based on
+#' boosted Ridge Regression with mixing parameter alpha. The formula consists of a
+#' group baselearner part with degrees of freedom
+#' 1-alpha and individual baselearners with degrees of freedom alpha.
+#'
+#' @param alpha mixing parameter. For alpha = 0 only group baselearners and for
+#' alpha = 1 only idividual baselearners are defined.
 #' @param group_df data frame containing variable names with group structure
 #' @param var_name name of column in group_df containing the variable names
 #' to be used as predictors
@@ -37,8 +44,9 @@ create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
                            outcome_name = "y", group_name = "group_name",
                            var_name = "var_name") {
   stopifnot('Mixing parameter alpha must be numeric' = is.numeric(alpha))
+  stopifnot('Mixing parameter alpha must between zero and one' = (alpha >= 0 & alpha <= 1))
   stopifnot('group_df must be a data.frame' = is.data.frame(group_df))
-  stopifnot('group_name and var_name have to be columns of group_df' (group_name %in% colnames(group_df) &
+  stopifnot('group_name and var_name have to be columns of group_df' = (group_name %in% colnames(group_df) &
                var_name %in% colnames(group_df)))
     formula_group <- group_df %>%
       dplyr::select(group_name,var_name) %>%
@@ -51,8 +59,7 @@ create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
   formula_group <- paste0(formula_group$term, collapse = " + ")
   if (alpha == 0) {
     final_formula <- formula_group
-  }
-  if (alpha == 1) {
+  } else if (alpha == 1) {
     final_formula <- formula
   } else {
     final_formula <- paste0(formula, " + ", formula_group)

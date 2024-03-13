@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_formula.R
 \name{create_formula}
 \alias{create_formula}
-\title{Create a sgb formula}
+\title{Create a sparse-group boosting formula}
 \usage{
 create_formula(
   alpha = 0.05,
@@ -14,7 +14,8 @@ create_formula(
 )
 }
 \arguments{
-\item{alpha}{mixing parameter}
+\item{alpha}{mixing parameter. For alpha = 0 only group baselearners and for
+alpha = 1 only idividual baselearners are defined.}
 
 \item{group_df}{data frame containing variable names with group structure}
 
@@ -31,7 +32,10 @@ to be used as predictors}
 formula to be passed to mboost() yielding the sparse group boosting for a given value mixing parameter alpha.
 }
 \description{
-Create a sgb formula
+Creates a mboost formula that allows to fit a sparse group boosting model based on
+boosted Ridge Regression with mixing parameter alpha. The formula consists of a
+group baselearner part with degrees of freedom
+1-alpha and individual baselearners with degrees of freedom alpha.
 }
 \examples{
 library(mboost)
