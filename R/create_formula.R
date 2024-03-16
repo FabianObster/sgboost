@@ -14,6 +14,7 @@
 #' @param group_name name of column in group_df indicating the group structure of the variables
 #' @param blearner type of baselearner
 #' @param outcome_name name of dependent variable
+#' @param intercept logical. Should intercept be used?
 #' @importFrom dplyr filter select group_by summarize mutate %>%
 #' @importFrom stats as.formula
 #'
@@ -21,6 +22,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(mboost)
 #' library(tidyverse)
 #' set.seed(1)
@@ -39,10 +41,10 @@
 #' sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
 #' summary(sgb_model)
-#' plot(sgb_model)
+#' plot(sgb_model)}
 create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
                            outcome_name = "y", group_name = "group_name",
-                           var_name = "var_name") {
+                           var_name = "var_name", intercept = FALSE) {
   stopifnot('Mixing parameter alpha must be numeric' = is.numeric(alpha))
   stopifnot('Mixing parameter alpha must between zero and one' = (alpha >= 0 & alpha <= 1))
   stopifnot('group_df must be a data.frame' = is.data.frame(group_df))
@@ -52,11 +54,11 @@ create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
       dplyr::select(group_name,var_name) %>%
       dplyr::group_by(group_name) %>%
       dplyr::summarize(var_name = paste0(var_name, collapse = " , ")) %>%
-      dplyr::mutate(term = paste0(blearner, "(", var_name, ", df = ",
-                                  (1 - alpha), ", intercept=F)"))
-  formula <- paste0(paste0(blearner, "(", group_df$var_name, ", df = ",
-                           alpha, ", intercept=F)"),collapse = '+')
-  formula_group <- paste0(formula_group$term, collapse = " + ")
+      dplyr::mutate(term = paste0(blearner, '(', var_name, ", df = ",
+                                  (1 - alpha), ', intercept=', substr(intercept,1,1), ')'))
+  formula <- paste0(paste0(blearner, '(', group_df$var_name, ', df = ',
+                           alpha, ', intercept=', substr(intercept,1,1), ')'),collapse = '+')
+  formula_group <- paste0(formula_group$term, collapse = '+')
   if (alpha == 0) {
     final_formula <- formula_group
   } else if (alpha == 1) {
@@ -64,6 +66,6 @@ create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
   } else {
     final_formula <- paste0(formula, " + ", formula_group)
   }
-  final_formula <- stats::as.formula(paste0(outcome_name, '~', final_formula))
+  final_formula <- paste0(outcome_name, '~', final_formula)
   return(final_formula)
 }

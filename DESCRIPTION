@@ -5,10 +5,13 @@ Authors@R:
     person("Fabian", "Obster", , "fabian.obster@unibw.de", role = c("aut", "cre"),
            comment = c(ORCID = "https://orcid.org/0000-0002-6951-9869"))
 Description: Implements sparse-group boosting in R in conjunction with the mboost package. A formula interface is provided, as well as funnctionality for model interpretability and visualization.
-Imports: dplyr
+Imports: dplyr, mboost, stringr, rlang, tibble
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 URL: https://github.com/FabianObster/sgboost
 BugReports: https://github.com/FabianObster/sgboost/issues
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

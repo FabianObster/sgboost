@@ -10,7 +10,8 @@ create_formula(
   blearner = "bols",
   outcome_name = "y",
   group_name = "group_name",
-  var_name = "var_name"
+  var_name = "var_name",
+  intercept = FALSE
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ alpha = 1 only idividual baselearners are defined.}
 
 \item{var_name}{name of column in group_df containing the variable names
 to be used as predictors}
+
+\item{intercept}{logical. Should intercept be used?}
 }
 \value{
 formula to be passed to mboost() yielding the sparse group boosting for a given value mixing parameter alpha.
@@ -38,6 +41,7 @@ group baselearner part with degrees of freedom
 1-alpha and individual baselearners with degrees of freedom alpha.
 }
 \examples{
+\dontrun{
 library(mboost)
 library(tidyverse)
 set.seed(1)
@@ -56,5 +60,5 @@ group_df <- data.frame(
 sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
 sgb_model <- mboost(formula = sgb_formula, data = df)
 summary(sgb_model)
-plot(sgb_model)
+plot(sgb_model)}
 }

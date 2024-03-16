@@ -2,23 +2,27 @@
 % Please edit documentation in R/get_varimp.R
 \name{get_varimp}
 \alias{get_varimp}
-\title{Create a sparse-group boosting formula}
+\title{Variable importance of a sparse group boosting model}
 \usage{
 get_varimp(sgb_model)
 }
 \arguments{
-\item{model}{mboost model to compute the variable importance for.}
+\item{sgb_model}{mboost model to compute the variable importance for.}
 }
 \value{
-dataframe containing the variables, group structure and
+list of two dataframes. varimp contains the variables, group structure and
 variable importance on both group and individual variable basis.
+group_importance contains the the aggregated relative importance
+(relative reduction of loss-function) of all group baselearners and of all
+individual variables
 }
 \description{
-Commutes the variable importance of a sparse-group mboost model.
+Returns the variable importance of a sparse-group mboost model in a dataframe.
 }
 \examples{
+\dontrun{
 library(mboost)
-library(tidyverse)
+library(dplyr)
 set.seed(1)
 df <- data.frame(
  x1 = rnorm(100),x2 = rnorm(100),x3 = rnorm(100),
@@ -32,7 +36,7 @@ group_df <- data.frame(
  var_name = c('x1','x2','x3','x4','x5')
 )
 
-sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
+sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 sgb_model <- mboost(formula = sgb_formula, data = df)
-sgb_varimp <- get_varimp(sgb_model)
+sgb_varimp <- get_varimp(sgb_model)}
 }
