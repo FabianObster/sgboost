@@ -5,7 +5,7 @@ Authors@R:
     person("Fabian", "Obster", , "fabian.obster@unibw.de", role = c("aut", "cre"),
            comment = c(ORCID = "https://orcid.org/0000-0002-6951-9869"))
 Description: Implements sparse-group boosting in R in conjunction with the mboost package. A formula interface is provided, as well as funnctionality for model interpretability and visualization.
-Imports: dplyr, mboost, stringr, rlang, tibble
+Imports: dplyr, mboost, stringr, rlang, tibble, ggnetwork
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
