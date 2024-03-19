@@ -5,7 +5,7 @@
 #'
 #' @param sgb_model mboost model to compute the variable importance for.
 #' @importFrom dplyr filter mutate %>%
-#' @mportFrom tibble rownames_to_column
+#' @importFrom tibble rownames_to_column tibble
 #'
 #' @return dataframe containing the variable and the aggregated (Regression) coefficients
 #' @export
@@ -41,12 +41,19 @@ get_coef <- function(sgb_model) {
         tibble::rownames_to_column() %>%
       mutate(blearner = names(sgb_model$coef())[i])
       }) %>%
-    dplyr::bind_rows()
+    dplyr::bind_rows() %>%
+    tibble()
   colnames(coef_df)[1:2] <- c('variable', 'effect')
   coef_df <- coef_df %>%
+    mutate(predictor = str_replace(.data$blearner, ',[^,]*=.*',''),
+           predictor = str_replace(.data$predictor, 'bols\\(',''),
+           type = dplyr::case_when(stringr::str_detect(variable,',') ~ 'group',
+                                   T ~ 'individual'))
+  coef_df_aggregate <- coef_df %>%
     dplyr::group_by(.data$variable) %>%
     dplyr::reframe(effect = sum(.data$effect),
-                   blearner = paste0(.data$blearner, collapse = '; ')) %>%
+                   blearner = paste0(.data$blearner, collapse = '; '),
+                   predictor = paste0(.data$predictor, collapse = '; ')) %>%
     dplyr::arrange(abs(.data$effect))
-  return(coef_df)
+  return(list(raw = coef_df, aggregated = coef_df_aggregate))
 }
