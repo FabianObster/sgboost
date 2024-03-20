@@ -18,14 +18,14 @@ test_that("get_varimp works", {
 
   sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
   sgb_model <- mboost(formula = sgb_formula, data = df)
-  sgb_varimp <- get_varimp(sgb_model)
+  sgb_varimp <- sgboost::get_varimp(sgb_model)
   expect_equal(is.data.frame(sgb_varimp$varimp), TRUE)
   expect_equal(is.data.frame(sgb_varimp$group_importance), TRUE)
   expect_equal(dim(sgb_varimp$group_importance)[2], 2)
   expect_equal(tibble(reduction = c(0.588, 1.62),
                       blearner = c('bols(x1, intercept = F, df = 0.3)',
                                    'bols(x4, x5, intercept = F, df = 0.7)'),
-                      variable = c('x1','x4, x5'),
+                      predictor = c('x1','x4, x5'),
                       selfreq = c(0.41, 0.59),
                       type = c('individual', 'group'),
                       relative_importance = c(0.2668, 0.7332)),

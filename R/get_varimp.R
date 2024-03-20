@@ -42,10 +42,11 @@ get_varimp <- function(sgb_model) {
   stopifnot('Model must be of class mboost' = class(sgb_model) == 'mboost')
   sgb_varimp <- mboost::varimp(sgb_model) %>%
     as.data.frame() %>%
+    dplyr::rename('predictor' = 'variable') %>%
     dplyr::filter(.data$reduction != 0) %>%
-    dplyr::mutate(type = dplyr::case_when(stringr::str_detect(variable,',') ~ 'group',
+    dplyr::mutate(type = dplyr::case_when(stringr::str_detect(.data$predictor,',') ~ 'group',
                                           T ~ 'individual'),
-                  variable = as.character(.data$variable),
+                  predictor = as.character(.data$predictor),
                   blearner = as.character(.data$blearner)) %>%
     dplyr::mutate(relative_importance = .data$reduction/sum(.data$reduction)) %>%
     dplyr::group_by(.data$type) %>%
