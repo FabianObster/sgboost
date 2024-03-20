@@ -61,11 +61,7 @@ get_varimp <- function(sgb_model) {
   sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
   sgb_model <- mboost(formula = sgb_formula, data = df)
   sgb_varimp <- get_varimp(sgb_model)
-  sgb_effects <- get_coef(sgb_model)$raw %>%
-    mutate(predictor = str_replace(blearner, ',[^,]*=.*',''),
-           predictor = str_replace(predictor, 'bols\\(',''))
-  sgb_effects <- get_coef(sgb_model)$raw$blearner %>%
-    as.list() %>% lapply(function(x){as.formula(paste0('~', x))}) %>%
+  sgb_effects <- get_coef(sgb_model)$raw
 
   return(list(varimp = sgb_varimp, group_importance = group_importance))
 }

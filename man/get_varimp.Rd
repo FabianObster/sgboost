@@ -33,7 +33,9 @@ group_importance contains the the aggregated relative importance
 individual variables
 }
 \description{
-Returns the variable importance of a sparse-group mboost model in a dataframe.
+Returns a list of two dataframes. The first contains the variable importance
+of a sparse-group mboost model in a dataframe. The second one contains the
+relative importance of all groups vs. individual variables
 
 Returns the variable importance of a sparse-group mboost model in a dataframe.
 
