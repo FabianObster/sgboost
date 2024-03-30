@@ -1,9 +1,11 @@
 #' Variable importance of a sparse group boosting model
 #'
 #' @description
-#' Returns the variable importance of a sparse-group mboost model in a dataframe.
+#'  Returns a list of two dataframes. The first contains the variable importance
+#'  of a sparse-group mboost model in a dataframe. The second one contains the
+#'  relative importance of all groups vs. individual variables
 #'
-#' @param sgb_model mboost model to compute the variable importance for.
+#' @param sgb_model mboost model to compute the variable importance for
 #' @importFrom dplyr filter mutate %>%
 #' @importFrom stringr str_detect
 #' @importFrom mboost varimp
@@ -14,7 +16,6 @@
 #' group_importance contains the the aggregated relative importance
 #' (relative reduction of loss-function) of all group baselearners and of all
 #' individual variables
-#'
 #' @export
 #'
 #' @examples
@@ -36,16 +37,17 @@
 #'
 #' sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
-#' sgb_varimp <- get_varimp(sgb_model)}
+#' sgb_varimp <- get_sgb_varimp(sgb_model)}
 
-plot_varimp <- function(sgb_model) {
+get_sgb_varimp <- function(sgb_model) {
   stopifnot('Model must be of class mboost' = class(sgb_model) == 'mboost')
   sgb_varimp <- mboost::varimp(sgb_model) %>%
     as.data.frame() %>%
+    dplyr::rename('predictor' = 'variable') %>%
     dplyr::filter(.data$reduction != 0) %>%
-    dplyr::mutate(type = dplyr::case_when(stringr::str_detect(variable,',') ~ 'group',
+    dplyr::mutate(type = dplyr::case_when(stringr::str_detect(.data$predictor,',') ~ 'group',
                                           T ~ 'individual'),
-                  variable = as.character(.data$variable),
+                  predictor = as.character(.data$predictor),
                   blearner = as.character(.data$blearner)) %>%
     dplyr::mutate(relative_importance = .data$reduction/sum(.data$reduction)) %>%
     dplyr::group_by(.data$type) %>%
