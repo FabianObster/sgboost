@@ -4,10 +4,20 @@
 \alias{plot_effects}
 \title{Variable importance of a sparse group boosting model}
 \usage{
-plot_effects(sgb_model)
+plot_effects(sgb_model, prop = 1, n_vars = 30, max_char_length = 5)
 }
 \arguments{
 \item{sgb_model}{mboost model to compute the variable importance for.}
+
+\item{prop}{the maximum proportion of explained importance. Default value is one,
+meaning all predictors are plotted. By setting prop smaller than one the number of
+plotted variables can be reduced. One can also use 'nvars' for limiting
+the number of variables to be plotted directly.}
+
+\item{n_vars}{The maximum number of predictors to be plotted. Default is 30}
+
+\item{max_char_length}{The maximum character length of a predictor to be printed.
+Default is 5. For long variable names one may adjust this number.}
 }
 \value{
 list of two dataframes. varimp contains the variables, group structure and

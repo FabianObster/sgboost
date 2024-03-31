@@ -1,19 +1,28 @@
-#' Variable importance of a sparse group boosting model
+#' Variable importance bar plot of a sparse group boosting model
 #'
 #' @description
-#' Returns the variable importance of a sparse-group mboost model in a dataframe.
+#' Visualizes the variable importance of a sparse-group mboost model. Note that
+#' aggregated group and individual variable importance printed in the legend is based
+#' only on the plotted variables not all variables that were selected in the sparse-group
+#' boosting model.
 #'
 #' @param sgb_model mboost model to compute the variable importance for.
-#' @importFrom dplyr filter mutate %>%
+#' @param prop the maximum proportion of explained importance. Default value is one,
+#' meaning all predictors are plotted. By setting prop smaller than one the number of
+#' plotted variables can be reduced. One can also use 'nvars' for limiting
+#' the number of variables to be plotted directly.
+#' @param n_vars The maximum number of predictors to be plotted. Default is 30
+#' @param max_char_length The maximum character length of a predictor to be printed.
+#' Default is 15. For larger groups or long variable names one may adjust this number to
+#' differentiate variables from groups.
+#' @importFrom dplyr filter  arrange mutate filter group_by ungroup mutate %>%
 #' @importFrom stringr str_detect
 #' @importFrom mboost varimp
 #' @importFrom rlang .data
+#' @import ggplot2
 #'
-#' @return list of two dataframes. varimp contains the variables, group structure and
-#' variable importance on both group and individual variable basis.
-#' group_importance contains the the aggregated relative importance
-#' (relative reduction of loss-function) of all group baselearners and of all
-#' individual variables
+#' @return object of type ggplot2. Bar plot visualizing the relative importance of
+#'  predictors.
 #'
 #' @export
 #'
@@ -38,21 +47,35 @@
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
 #' sgb_varimp <- get_varimp(sgb_model)}
 
-plot_varimp <- function(sgb_model) {
+plot_varimp <- function(sgb_model, prop = 1, n_vars = 30, max_char_length = 15) {
   stopifnot('Model must be of class mboost' = class(sgb_model) == 'mboost')
-  sgb_varimp <- mboost::varimp(sgb_model) %>%
-    as.data.frame() %>%
-    dplyr::filter(.data$reduction != 0) %>%
-    dplyr::mutate(type = dplyr::case_when(stringr::str_detect(variable,',') ~ 'group',
-                                          T ~ 'individual'),
-                  variable = as.character(.data$variable),
-                  blearner = as.character(.data$blearner)) %>%
-    dplyr::mutate(relative_importance = .data$reduction/sum(.data$reduction)) %>%
+  stopifnot('prop must be numberic' =  is.numeric(prop))
+  stopifnot('prop must be between zero and one' = prop <= 1 & prop > 0)
+  stopifnot('n_vars must be a positive number' = is.numeric(n_vars) & n_vars > 0)
+  stopifnot('max_char_length must be a positive number' =
+              is.numeric(max_char_length) & max_char_length > 0)
+  sgb_varimp <- get_varimp(sgb_model)
+  plotdata <- sgb_varimp$varimp %>%
+    dplyr::arrange(-.data$relative_importance) %>%
+    dplyr::mutate(cum_importance = cumsum(.data$relative_importance)) %>%
+    dplyr::filter(.data$cum_importance <= prop, .data$cum_importance <= n_vars) %>%
     dplyr::group_by(.data$type) %>%
-    dplyr::arrange(.data$reduction) %>%
-    dplyr::ungroup()
-  group_importance <- sgb_varimp %>%
-    dplyr::group_by(.data$type) %>%
-    dplyr::summarize(importance = sum(.data$relative_importance))
-  return(list(varimp = sgb_varimp, group_importance = group_importance))
+    dplyr::mutate(total_importance = sum(.data$relative_importance)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(type = paste0(.data$type,' (',round(.data$relative_importance, 2),')'),
+                  predictor = substr(.data$predictor,1,max_char_length))
+  if(sum(nchar(sgb_varimp$varimp$predictor) > max_char_length)){
+    message('The number characters of some predictors were reduced.
+            Adjust with max_char_length')
+  }
+  if(dim(plotdata)[1] < dim(sgb_varimp$varimp)[1]){
+    message(paste0(dim(sgb_varimp$varimp)[1]-dim(plotdata)[1],
+                   ' predictors were removed. Use prop or n_vars to change'))
+  }
+  plot_out <- plotdata %>%
+    ggplot2::ggplot(aes(x = .data$predictor,
+                        fill = .data$type, y = .data$relative_importance)) +
+    ggplot2::geom_col() + coord_flip() + xlab('Predictor') +
+    ylab('Relative importance') + theme_bw() + theme(legend.title = element_blank())
+  return(plot_out)
 }

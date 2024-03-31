@@ -2,22 +2,33 @@
 % Please edit documentation in R/plot_varimp.R
 \name{plot_varimp}
 \alias{plot_varimp}
-\title{Variable importance of a sparse group boosting model}
+\title{Variable importance bar plot of a sparse group boosting model}
 \usage{
-plot_varimp(sgb_model)
+plot_varimp(sgb_model, prop = 1, n_vars = 30, max_char_length = 15)
 }
 \arguments{
 \item{sgb_model}{mboost model to compute the variable importance for.}
+
+\item{prop}{the maximum proportion of explained importance. Default value is one,
+meaning all predictors are plotted. By setting prop smaller than one the number of
+plotted variables can be reduced. One can also use 'nvars' for limiting
+the number of variables to be plotted directly.}
+
+\item{n_vars}{The maximum number of predictors to be plotted. Default is 30}
+
+\item{max_char_length}{The maximum character length of a predictor to be printed.
+Default is 15. For larger groups or long variable names one may adjust this number to
+differentiate variables from groups.}
 }
 \value{
-list of two dataframes. varimp contains the variables, group structure and
-variable importance on both group and individual variable basis.
-group_importance contains the the aggregated relative importance
-(relative reduction of loss-function) of all group baselearners and of all
-individual variables
+object of type ggplot2. Bar plot visualizing the relative importance of
+predictors.
 }
 \description{
-Returns the variable importance of a sparse-group mboost model in a dataframe.
+Visualizes the variable importance of a sparse-group mboost model. Note that
+aggregated group and individual variable importance printed in the legend is based
+only on the plotted variables not all variables that were selected in the sparse-group
+boosting model.
 }
 \examples{
 \dontrun{
