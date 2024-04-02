@@ -8,17 +8,18 @@
 #'
 #' @param alpha Numeric mixing parameter. For alpha = 0 only group baselearners and for
 #' alpha = 1 only individual baselearners are defined.
-#' @param group_df Dataframe containing variable names with group structure
+#' @param group_df Dataframe containing variable names with group structure.
 #' @param var_name Name of column in group_df containing the variable names
 #' to be used as predictors.
 #' @param group_name Name of column in group_df indicating the group structure of the variables.
-#' @param blearner Type of baselearner. Default is `'bols'`
-#' @param outcome_name Name of dependent variable
+#' @param blearner Type of baselearner. Default is `'bols'`.
+#' @param outcome_name Name of dependent variable.
 #' @param intercept Logical, should intercept be used?
 #' @importFrom dplyr filter select group_by summarize mutate %>%
 #' @importFrom stats as.formula
 #'
-#' @return Character containing the formula to be passed to [mboost::mboost()] yielding the sparse group boosting for a given value mixing parameter alpha.
+#' @return Character containing the formula to be passed to [mboost::mboost()]
+#'  yielding the sparse group boosting for a given value mixing parameter `alpha`.
 #' @export
 #'
 #' @examples
@@ -49,6 +50,10 @@ create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
   stopifnot('group_df must be a data.frame' = is.data.frame(group_df))
   stopifnot('group_name and var_name have to be columns of group_df' = (group_name %in% colnames(group_df) &
                var_name %in% colnames(group_df)))
+  if(blearner != 'bols'){
+    warning('passing a baselearner other than bols does not guarantee
+            that mboost() returns a sparse group boosting model')
+  }
     formula_group <- group_df %>%
       dplyr::select(group_name,var_name) %>%
       dplyr::group_by(group_name) %>%

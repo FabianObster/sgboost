@@ -1,8 +1,8 @@
 test_that("get_coef works", {
   expect_error(get_varimp(sgb_model = 'sgb'),
                'Model must be of class mboost')
-  library(mboost)
   library(dplyr)
+  library(mboost)
   set.seed(1)
   df <- data.frame(
     x1 = rnorm(100),x2 = rnorm(100),x3 = rnorm(100),

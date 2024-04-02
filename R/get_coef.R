@@ -52,6 +52,7 @@ get_coef <- function(sgb_model) {
   coef_df <- coef_df %>%
     mutate(predictor = str_replace(.data$blearner, ',[^,]*=.*',''),
            predictor = str_replace(.data$predictor, 'bols\\(',''),
+           predictor = str_replace(.data$predictor, '\\)',''),
            type = dplyr::case_when(stringr::str_detect(predictor,',') ~ 'group',
                                    T ~ 'individual'))
   coef_df_aggregate <- coef_df %>%

@@ -13,13 +13,13 @@
 #' importance as x-axis in a classical Scatter plot.
 #' @param prop Numeric value indicating the maximum proportion of explained importance. Default value is one,
 #' meaning all predictors are plotted. By setting prop smaller than one the number of
-#' plotted variables can be reduced. One can also use `'n_vars'` for limiting
+#' plotted variables can be reduced. One can also use `'n_predictors'` for limiting
 #' the number of variables to be plotted directly.
-#' @param n_vars The maximum number of predictors to be plotted. Default is 30.
+#' @param n_predictors The maximum number of predictors to be plotted. Default is 30.
 #' Alternative to `'prop'`.
 #' @param max_char_length The maximum character length of a predictor to be printed.
 #' Default is 5. For long variable names one may adjust this number.
-#' @importFrom dplyr filter mutate %>%
+#' @importFrom dplyr filter mutate case_when %>%
 #' @importFrom stringr str_detect str_replace
 #' @importFrom mboost varimp
 #' @importFrom rlang .data
@@ -51,13 +51,20 @@
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
 #' plot_effects(sgb_model)}
 
-plot_effects <- function(sgb_model, plot_type = 'radar', prop = 1, n_vars = 30,
+plot_effects <- function(sgb_model, plot_type = 'radar', prop = 1, n_predictors = 30,
                          max_char_length = 5){
   stopifnot('Model must be of class mboost' = class(sgb_model) == 'mboost')
+  stopifnot('prop must be numberic' =  is.numeric(prop))
+  stopifnot('prop must be between zero and one' = prop <= 1 & prop > 0)
+  stopifnot('n_predictors must be a positive number' = is.numeric(n_predictors) & n_predictors > 0)
+  stopifnot('max_char_length must be a positive number' =
+              is.numeric(max_char_length) & max_char_length > 0)
   sgb_varimp <- get_varimp(sgb_model)$varimp %>%
     dplyr::arrange(-.data$relative_importance) %>%
     dplyr::mutate(cum_importance = cumsum(.data$relative_importance)) %>%
-    dplyr::filter(.data$cum_importance <= prop, .data$cum_importance <= n_vars)
+    dplyr::filter(.data$relative_importance <= prop) %>%
+    dplyr::slice(1:n_predictors) %>%
+    dplyr::mutate(predictor = dplyr::case_when(.data$predictor == '(Intercept)'~'I',T ~ .data$predictor))
   sgb_effects <- get_coef(sgb_model)$raw
   plotdata <- dplyr::inner_join(sgb_effects, sgb_varimp, by = c('predictor','blearner', 'type'))
   if(sum(nchar(plotdata$variable) > max_char_length) >= 1){
@@ -65,8 +72,8 @@ plot_effects <- function(sgb_model, plot_type = 'radar', prop = 1, n_vars = 30,
             Adjust with max_char_length')
   }
   if(dim(sgb_varimp)[1] < dim(get_varimp(sgb_model)$varimp)[1]){
-    message(paste0(dim(sgb_varimp$varimp)[1]-dim(plotdata)[1],
-                   ' predictors were removed. Use prop or n_vars to change'))
+    message(paste0(dim(get_varimp(sgb_model)$varimp)[1]-dim(sgb_varimp)[1],
+                   ' predictors were removed. Use prop or n_predictors to change'))
   }
   if(plot_type == 'radar'){
   plotdata <- plotdata %>%

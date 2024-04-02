@@ -8,7 +8,7 @@ plot_effects(
   sgb_model,
   plot_type = "radar",
   prop = 1,
-  n_vars = 30,
+  n_predictors = 30,
   max_char_length = 5
 )
 }
@@ -24,10 +24,10 @@ importance as x-axis in a classical Scatter plot.}
 
 \item{prop}{Numeric value indicating the maximum proportion of explained importance. Default value is one,
 meaning all predictors are plotted. By setting prop smaller than one the number of
-plotted variables can be reduced. One can also use \code{'n_vars'} for limiting
+plotted variables can be reduced. One can also use \code{'n_predictors'} for limiting
 the number of variables to be plotted directly.}
 
-\item{n_vars}{The maximum number of predictors to be plotted. Default is 30.
+\item{n_predictors}{The maximum number of predictors to be plotted. Default is 30.
 Alternative to \code{'prop'}.}
 
 \item{max_char_length}{The maximum character length of a predictor to be printed.

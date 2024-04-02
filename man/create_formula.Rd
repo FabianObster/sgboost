@@ -18,11 +18,11 @@ create_formula(
 \item{alpha}{Numeric mixing parameter. For alpha = 0 only group baselearners and for
 alpha = 1 only individual baselearners are defined.}
 
-\item{group_df}{Dataframe containing variable names with group structure}
+\item{group_df}{Dataframe containing variable names with group structure.}
 
-\item{blearner}{Type of baselearner. Default is \code{'bols'}}
+\item{blearner}{Type of baselearner. Default is \code{'bols'}.}
 
-\item{outcome_name}{Name of dependent variable}
+\item{outcome_name}{Name of dependent variable.}
 
 \item{group_name}{Name of column in group_df indicating the group structure of the variables.}
 
@@ -32,7 +32,8 @@ to be used as predictors.}
 \item{intercept}{Logical, should intercept be used?}
 }
 \value{
-Character containing the formula to be passed to \code{\link[mboost:gamboost]{mboost::mboost()}} yielding the sparse group boosting for a given value mixing parameter alpha.
+Character containing the formula to be passed to \code{\link[mboost:gamboost]{mboost::mboost()}}
+yielding the sparse group boosting for a given value mixing parameter \code{alpha}.
 }
 \description{
 Creates a \code{mboost} formula that allows to fit a sparse group boosting model based on

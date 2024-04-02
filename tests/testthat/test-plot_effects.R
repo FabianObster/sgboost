@@ -1,7 +1,8 @@
 test_that("plot_effect works", {
-  library(mboost)
+  expect_error(plot_effects(sgb_model = 'sgb'),
+               'Model must be of class mboost')
   library(dplyr)
-  library(ggplot2)
+  library(mboost)
   set.seed(1)
   df <- data.frame(
     x1 = rnorm(100),x2 = rnorm(100),x3 = rnorm(100),
@@ -9,12 +10,14 @@ test_that("plot_effect works", {
   )
   df <- df %>%
     mutate_all(function(x){as.numeric(scale(x))})
-  df$y <- -df$x1+df$x4+df$x5
+  df$y <- df$x1+df$x4+df$x5
   group_df <- data.frame(
     group_name = c(1,1,1,2,2),
     var_name = c('x1','x2','x3','x4','x5')
   )
-  sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
+  sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df, intercept = T))
   sgb_model <- mboost(formula = sgb_formula, data = df)
-  plot_effects(sgb_model)
+  expect_error(plot_effects(sgb_model = sgb_model,prop = 1.2), 'prop must be between zero and one')
+  expect_error(plot_effects(sgb_model = sgb_model, prop = -1))
+  expect_message(plot_effects(sgb_model = sgb_model, n_predictors = 1, max_char_length = 20))
 })
