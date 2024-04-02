@@ -40,7 +40,7 @@
 #'
 #' sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
 #' sgb_model <- mboost(formula = as.formula(sgb_formula), data = df)
-#' summary(sgb_model)
+#' summary(sgb_model)}
 create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
                            outcome_name = "y", group_name = "group_name",
                            var_name = "var_name", intercept = FALSE) {
