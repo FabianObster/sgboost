@@ -1,24 +1,24 @@
 #' Create a sparse-group boosting formula
 #'
 #' @description
-#' Creates a mboost formula that allows to fit a sparse group boosting model based on
-#' boosted Ridge Regression with mixing parameter alpha. The formula consists of a
+#' Creates a `mboost` formula that allows to fit a sparse group boosting model based on
+#' boosted Ridge Regression with mixing parameter `alpha`. The formula consists of a
 #' group baselearner part with degrees of freedom
-#' 1-alpha and individual baselearners with degrees of freedom alpha.
+#' 1-alpha and individual baselearners with degrees of freedom `alpha`.
 #'
-#' @param alpha mixing parameter. For alpha = 0 only group baselearners and for
-#' alpha = 1 only idividual baselearners are defined.
-#' @param group_df data frame containing variable names with group structure
-#' @param var_name name of column in group_df containing the variable names
-#' to be used as predictors
-#' @param group_name name of column in group_df indicating the group structure of the variables
-#' @param blearner type of baselearner
-#' @param outcome_name name of dependent variable
-#' @param intercept logical. Should intercept be used?
+#' @param alpha Numeric mixing parameter. For alpha = 0 only group baselearners and for
+#' alpha = 1 only individual baselearners are defined.
+#' @param group_df Dataframe containing variable names with group structure
+#' @param var_name Name of column in group_df containing the variable names
+#' to be used as predictors.
+#' @param group_name Name of column in group_df indicating the group structure of the variables.
+#' @param blearner Type of baselearner. Default is `'bols'`
+#' @param outcome_name Name of dependent variable
+#' @param intercept Logical, should intercept be used?
 #' @importFrom dplyr filter select group_by summarize mutate %>%
 #' @importFrom stats as.formula
 #'
-#' @return formula to be passed to mboost() yielding the sparse group boosting for a given value mixing parameter alpha.
+#' @return Character containing the formula to be passed to [mboost::mboost()] yielding the sparse group boosting for a given value mixing parameter alpha.
 #' @export
 #'
 #' @examples
@@ -39,9 +39,8 @@
 #' )
 #'
 #' sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
-#' sgb_model <- mboost(formula = sgb_formula, data = df)
+#' sgb_model <- mboost(formula = as.formula(sgb_formula), data = df)
 #' summary(sgb_model)
-#' plot(sgb_model)}
 create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
                            outcome_name = "y", group_name = "group_name",
                            var_name = "var_name", intercept = FALSE) {

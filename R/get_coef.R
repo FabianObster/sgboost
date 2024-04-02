@@ -1,13 +1,18 @@
-#' Aggregated coefficients in a sparse group boosting model
+#' Aggregated and raw coefficients in a sparse group boosting model
 #'
 #' @description
-#' Computes the aggregate coefficients from group and individual baselearners
+#' Computes the aggregated coefficients from group and individual baselearners.
+#' @details in a sparse group boosting models a variable in a dataset can be selected
+#' as an individual variable or as a group. Therefore there can be two associated effect sizes for the
+#' same variable. This function aggregates both and returns it in a dataframe.
 #'
-#' @param sgb_model mboost model to compute the variable importance for.
+#' @param sgb_model `mboost` model to compute the variable importance for.
 #' @importFrom dplyr filter mutate %>%
 #' @importFrom tibble rownames_to_column tibble
 #'
-#' @return dataframe containing the variable and the aggregated (Regression) coefficients
+#' @return List of dataframes containing the a dataframe `$raw` with the
+#' variable and the raw (Regression) coefficients and the dataframe `$aggregated` with the
+#' aggregated (Regression) coefficients.
 #' @export
 #'
 #' @examples
@@ -29,7 +34,7 @@
 #'
 #' sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
-#' sgb_varimp <- get_varimp(sgb_model)}
+#' sgb_coef <- get_coef(sgb_model)}
 
 get_coef <- function(sgb_model) {
   stopifnot('Model must be of class mboost' = class(sgb_model) == 'mboost')

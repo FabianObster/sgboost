@@ -1,17 +1,20 @@
 #' Variable importance bar plot of a sparse group boosting model
 #'
 #' @description
-#' Visualizes the variable importance of a sparse-group mboost model. Note that
-#' aggregated group and individual variable importance printed in the legend is based
-#' only on the plotted variables not all variables that were selected in the sparse-group
+#' Visualizes the variable importance of a sparse-group boosting model.
+#' Color indicates if a predictor is an individual variable or a group.
+#' @details
+#' Note that aggregated group and individual variable importance printed in the legend is based
+#' only on the plotted variables and not on all variables that were selected in the sparse-group
 #' boosting model.
 #'
-#' @param sgb_model mboost model to compute the variable importance for.
-#' @param prop the maximum proportion of explained importance. Default value is one,
+#' @param sgb_model `mboost` model to compute the variable importance for.
+#' @param prop Numeric value indicating the maximum proportion of explained importance. Default value is one,
 #' meaning all predictors are plotted. By setting prop smaller than one the number of
-#' plotted variables can be reduced. One can also use 'nvars' for limiting
+#' plotted variables can be reduced. One can also use `'n_vars'` for limiting
 #' the number of variables to be plotted directly.
-#' @param n_vars The maximum number of predictors to be plotted. Default is 30
+#' @param n_vars The maximum number of predictors to be plotted. Default is 30.
+#' Alternative to `'prop'`.
 #' @param max_char_length The maximum character length of a predictor to be printed.
 #' Default is 15. For larger groups or long variable names one may adjust this number to
 #' differentiate variables from groups.
@@ -21,8 +24,8 @@
 #' @importFrom rlang .data
 #' @import ggplot2
 #'
-#' @return object of type ggplot2. Bar plot visualizing the relative importance of
-#'  predictors.
+#' @return object of type `ggplot2`.
+#' @seealso [sgboost::get_varimp] which this function uses.
 #'
 #' @export
 #'
@@ -45,7 +48,7 @@
 #'
 #' sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
-#' sgb_varimp <- get_varimp(sgb_model)}
+#' sgb_varimp <- plot_varimp(sgb_model)}
 
 plot_varimp <- function(sgb_model, prop = 1, n_vars = 30, max_char_length = 15) {
   stopifnot('Model must be of class mboost' = class(sgb_model) == 'mboost')

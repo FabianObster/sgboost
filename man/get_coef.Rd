@@ -2,18 +2,25 @@
 % Please edit documentation in R/get_coef.R
 \name{get_coef}
 \alias{get_coef}
-\title{Aggregated coefficients in a sparse group boosting model}
+\title{Aggregated and raw coefficients in a sparse group boosting model}
 \usage{
 get_coef(sgb_model)
 }
 \arguments{
-\item{sgb_model}{mboost model to compute the variable importance for.}
+\item{sgb_model}{\code{mboost} model to compute the variable importance for.}
 }
 \value{
-dataframe containing the variable and the aggregated (Regression) coefficients
+List of dataframes containing the a dataframe \verb{$raw} with the
+variable and the raw (Regression) coefficients and the dataframe \verb{$aggregated} with the
+aggregated (Regression) coefficients.
 }
 \description{
-Computes the aggregate coefficients from group and individual baselearners
+Computes the aggregated coefficients from group and individual baselearners.
+}
+\details{
+in a sparse group boosting models a variable in a dataset can be selected
+as an individual variable or as a group. Therefore there can be two associated effect sizes for the
+same variable. This function aggregates both and returns it in a dataframe.
 }
 \examples{
 \dontrun{
@@ -34,5 +41,5 @@ group_df <- data.frame(
 
 sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
 sgb_model <- mboost(formula = sgb_formula, data = df)
-sgb_varimp <- get_varimp(sgb_model)}
+sgb_coef <- get_coef(sgb_model)}
 }

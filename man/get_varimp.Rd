@@ -7,19 +7,20 @@
 get_varimp(sgb_model)
 }
 \arguments{
-\item{sgb_model}{mboost model to compute the variable importance for}
+\item{sgb_model}{\code{mboost} model to compute the variable importance for.}
 }
 \value{
-list of two dataframes. varimp contains the variables, group structure and
+List of two dataframes. \verb{$raw} contains the variables, group structure and
 variable importance on both group and individual variable basis.
-group_importance contains the the aggregated relative importance
-(relative reduction of loss-function) of all group baselearners and of all
-individual variables
+\verb{$group_importance} contains the the aggregated relative importance of all group baselearners and of all
+individual variables.
 }
 \description{
+Variable importance is comuted as relative reduction of loss-function attributed
+to each predictor (groups and individual variables).
 Returns a list of two dataframes. The first contains the variable importance
-of a sparse-group mboost model in a dataframe. The second one contains the
-relative importance of all groups vs. individual variables
+of a sparse-group model in a dataframe for each predictor.
+The second one contains the aggregated relative importance of all groups vs. individual variables.
 }
 \examples{
 \dontrun{
@@ -41,4 +42,7 @@ group_df <- data.frame(
 sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 sgb_model <- mboost(formula = sgb_formula, data = df)
 sgb_varimp <- get_varimp(sgb_model)}
+}
+\seealso{
+\code{\link[mboost:varimp]{mboost::varimp()}} which this function uses.
 }
