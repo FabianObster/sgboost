@@ -2,32 +2,43 @@
 % Please edit documentation in R/plot_effects.R
 \name{plot_effects}
 \alias{plot_effects}
-\title{Variable importance of a sparse group boosting model}
+\title{Visualizing a sparse group boosting model}
 \usage{
-plot_effects(sgb_model, prop = 1, n_vars = 30, max_char_length = 5)
+plot_effects(
+  sgb_model,
+  plot_type = "radar",
+  prop = 1,
+  n_vars = 30,
+  max_char_length = 5
+)
 }
 \arguments{
 \item{sgb_model}{mboost model to compute the variable importance for.}
 
-\item{prop}{the maximum proportion of explained importance. Default value is one,
+\item{plot_type}{String indicating the type of visualization to use.
+\code{'radar'} refers to a radar plot using polar coordinates.
+Here the angle is relative to the cumulative relative importance of predictors and
+the radius is proportional to the effect size. \code{'clock'} does the same as \code{'radar'} but uses clock coordinates
+instead of polar coordinates. \code{'scatter'} uses the effect size as y-coordinate and the cumulative relative
+importance as x-axis in a classical Scatter plot.}
+
+\item{prop}{Numeric value indicating the maximum proportion of explained importance. Default value is one,
 meaning all predictors are plotted. By setting prop smaller than one the number of
-plotted variables can be reduced. One can also use 'nvars' for limiting
+plotted variables can be reduced. One can also use \code{'n_vars'} for limiting
 the number of variables to be plotted directly.}
 
-\item{n_vars}{The maximum number of predictors to be plotted. Default is 30}
+\item{n_vars}{The maximum number of predictors to be plotted. Default is 30.
+Alternative to \code{'prop'}}
 
 \item{max_char_length}{The maximum character length of a predictor to be printed.
 Default is 5. For long variable names one may adjust this number.}
 }
 \value{
-list of two dataframes. varimp contains the variables, group structure and
-variable importance on both group and individual variable basis.
-group_importance contains the the aggregated relative importance
-(relative reduction of loss-function) of all group baselearners and of all
-individual variables
+\code{ggplot2} object mapping the effect sizes and variable importance.
 }
 \description{
-Returns the variable importance of a sparse-group mboost model in a dataframe.
+Radar or scatter/lineplot visualizing the effects sizes relative to the variable importance
+in a sparse group boosting model. Works also for a regular mboost model.
 }
 \examples{
 \dontrun{
@@ -48,5 +59,8 @@ group_df <- data.frame(
 
 sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 sgb_model <- mboost(formula = sgb_formula, data = df)
-sgb_varimp <- get_varimp(sgb_model)}
+plot_effects(sgb_model)}
+}
+\seealso{
+\code{\link[=get_coef]{get_coef()}}, \link{get_varimp} which this function uses.
 }
