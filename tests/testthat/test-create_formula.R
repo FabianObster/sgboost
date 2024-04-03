@@ -28,20 +28,20 @@ test_that("create_formula works", {
   expect_warning(create_formula(alpha = 0.5, group_df = group_df, blearner = "bbs"))
   expect_equal(
     as.formula(create_formula(alpha = 0.5, group_df = group_df)),
-    y ~ bols(x1, df = 0.5, intercept = F) +
-      bols(x2, df = 0.5, intercept = F) +
-      bols(x3, df = 0.5, intercept = F) +
-      bols(x1, x2, df = 0.5, intercept = F) +
-      bols(x3, df = 0.5, intercept = F)
+    y ~ bols(x1, df = 0.5, intercept = FALSE) +
+      bols(x2, df = 0.5, intercept = FALSE) +
+      bols(x3, df = 0.5, intercept = FALSE) +
+      bols(x1, x2, df = 0.5, intercept = FALSE) +
+      bols(x3, df = 0.5, intercept = FALSE)
   )
   expect_equal(
     as.formula(create_formula(alpha = 1, group_df = group_df)),
-    y ~ bols(x1, df = 1, intercept = F) +
-      bols(x2, df = 1, intercept = F) +
-      bols(x3, df = 1, intercept = F)
+    y ~ bols(x1, df = 1, intercept = FALSE) +
+      bols(x2, df = 1, intercept = FALSE) +
+      bols(x3, df = 1, intercept = FALSE)
   )
   expect_equal(
     as.formula(create_formula(alpha = 0, group_df = group_df)),
-    y ~ bols(x1, x2, df = 1, intercept = F) + bols(x3, df = 1, intercept = F)
+    y ~ bols(x1, x2, df = 1, intercept = FALSE) + bols(x3, df = 1, intercept = FALSE)
   )
 })

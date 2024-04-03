@@ -23,9 +23,8 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' library(mboost)
-#' library(tidyverse)
+#' library(dplyr)
 #' set.seed(1)
 #' df <- data.frame(
 #'   x1 = rnorm(100), x2 = rnorm(100), x3 = rnorm(100),
@@ -44,7 +43,6 @@
 #' sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
 #' sgb_model <- mboost(formula = as.formula(sgb_formula), data = df)
 #' summary(sgb_model)
-#' }
 create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
                            outcome_name = "y", group_name = "group_name",
                            var_name = "var_name", intercept = FALSE) {
@@ -64,11 +62,11 @@ create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
     dplyr::summarize(var_name = paste0(var_name, collapse = " , ")) %>%
     dplyr::mutate(term = paste0(
       blearner, "(", var_name, ", df = ",
-      (1 - alpha), ", intercept=", substr(intercept, 1, 1), ")"
+      (1 - alpha), ", intercept=", intercept, ")"
     ))
   formula <- paste0(paste0(
     blearner, "(", group_df$var_name, ", df = ",
-    alpha, ", intercept=", substr(intercept, 1, 1), ")"
+    alpha, ", intercept=", intercept, ")"
   ), collapse = "+")
   formula_group <- paste0(formula_group$term, collapse = "+")
   if (alpha == 0) {

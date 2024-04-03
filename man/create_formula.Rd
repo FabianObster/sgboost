@@ -42,9 +42,8 @@ group baselearner part with degrees of freedom
 1-alpha and individual baselearners with degrees of freedom \code{alpha}.
 }
 \examples{
-\dontrun{
 library(mboost)
-library(tidyverse)
+library(dplyr)
 set.seed(1)
 df <- data.frame(
   x1 = rnorm(100), x2 = rnorm(100), x3 = rnorm(100),
@@ -63,5 +62,4 @@ group_df <- data.frame(
 sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
 sgb_model <- mboost(formula = as.formula(sgb_formula), data = df)
 summary(sgb_model)
-}
 }

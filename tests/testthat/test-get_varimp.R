@@ -30,8 +30,8 @@ test_that("get_varimp works", {
     tibble(
       reduction = c(0.588, 1.62),
       blearner = c(
-        "bols(x1, intercept = F, df = 0.3)",
-        "bols(x4, x5, intercept = F, df = 0.7)"
+        "bols(x1, intercept = FALSE, df = 0.3)",
+        "bols(x4, x5, intercept = FALSE, df = 0.7)"
       ),
       predictor = c("x1", "x4, x5"),
       selfreq = c(0.41, 0.59),
