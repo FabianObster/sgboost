@@ -35,28 +35,33 @@
 #' library(dplyr)
 #' set.seed(1)
 #' df <- data.frame(
-#'  x1 = rnorm(100),x2 = rnorm(100),x3 = rnorm(100),
-#'  x4 = rnorm(100), x5 = runif(100)
-#'  )
+#'   x1 = rnorm(100), x2 = rnorm(100), x3 = rnorm(100),
+#'   x4 = rnorm(100), x5 = runif(100)
+#' )
 #' df <- df %>%
-#' mutate_all(function(x){as.numeric(scale(x))})
-#' df$y <- df$x1+df$x4+df$x5
+#'   mutate_all(function(x) {
+#'     as.numeric(scale(x))
+#'   })
+#' df$y <- df$x1 + df$x4 + df$x5
 #' group_df <- data.frame(
-#'  group_name = c(1,1,1,2,2),
-#'  var_name = c('x1','x2','x3','x4','x5')
+#'   group_name = c(1, 1, 1, 2, 2),
+#'   var_name = c("x1", "x2", "x3", "x4", "x5")
 #' )
 #'
 #' sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
-#' sgb_varimp <- plot_varimp(sgb_model)}
-
+#' sgb_varimp <- plot_varimp(sgb_model)
+#' }
 plot_varimp <- function(sgb_model, prop = 1, n_predictors = 30, max_char_length = 15) {
-  stopifnot('Model must be of class mboost' = class(sgb_model) == 'mboost')
-  stopifnot('prop must be numberic' =  is.numeric(prop))
-  stopifnot('prop must be between zero and one' = prop <= 1 & prop > 0)
-  stopifnot('n_predictors must be a positive number' = is.numeric(n_predictors) & n_predictors > 0)
-  stopifnot('max_char_length must be a positive number' =
-              is.numeric(max_char_length) & max_char_length > 0)
+  stopifnot("Model must be of class mboost" = class(sgb_model) == "mboost")
+  stopifnot("prop must be numberic" = is.numeric(prop))
+  stopifnot("prop must be between zero and one" = prop <= 1 & prop > 0)
+  stopifnot("n_predictors must be a positive number" =
+              is.numeric(n_predictors) & n_predictors > 0)
+  stopifnot(
+    "max_char_length must be a positive number" =
+      is.numeric(max_char_length) & max_char_length > 0
+  )
   sgb_varimp <- get_varimp(sgb_model)
   plotdata <- sgb_varimp$varimp %>%
     dplyr::arrange(-.data$relative_importance) %>%
@@ -66,20 +71,30 @@ plot_varimp <- function(sgb_model, prop = 1, n_predictors = 30, max_char_length 
     dplyr::group_by(.data$type) %>%
     dplyr::mutate(total_importance = sum(.data$relative_importance)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(type_label = paste0(.data$type,' (',round(.data$total_importance, 2),')'),
-                  predictor = substr(.data$predictor,1,max_char_length))
-  if(sum(nchar(sgb_varimp$varimp$predictor) > max_char_length)){
-    message('The number characters of some predictors were reduced.
-            Adjust with max_char_length')
+    dplyr::mutate(
+      type_label = paste0(.data$type, " (", round(.data$total_importance, 2), ")"),
+      predictor = substr(.data$predictor, 1, max_char_length)
+    )
+  if (sum(nchar(sgb_varimp$varimp$predictor) > max_char_length)) {
+    message("The number characters of some predictors were reduced.
+            Adjust with max_char_length")
   }
-  if(dim(plotdata)[1] < dim(sgb_varimp$varimp)[1]){
-    message(paste0(dim(sgb_varimp$varimp)[1]-dim(plotdata)[1],
-                   ' predictors were removed. Use prop or n_predictors to change'))
+  if (dim(plotdata)[1] < dim(sgb_varimp$varimp)[1]) {
+    message(paste0(
+      dim(sgb_varimp$varimp)[1] - dim(plotdata)[1],
+      " predictors were removed. Use prop or n_predictors to change"
+    ))
   }
   plot_out <- plotdata %>%
-    ggplot2::ggplot(aes(x = .data$predictor,
-                        fill = .data$type_label, y = .data$relative_importance)) +
-    ggplot2::geom_col() + coord_flip() + xlab('Predictor') +
-    ylab('Relative importance') + theme_bw() + theme(legend.title = element_blank())
+    ggplot2::ggplot(aes(
+      x = .data$predictor,
+      fill = .data$type_label, y = .data$relative_importance
+    )) +
+    ggplot2::geom_col() +
+    coord_flip() +
+    xlab("Predictor") +
+    ylab("Relative importance") +
+    theme_bw() +
+    theme(legend.title = element_blank())
   return(plot_out)
 }

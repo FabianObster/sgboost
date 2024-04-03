@@ -28,41 +28,49 @@
 #' library(tidyverse)
 #' set.seed(1)
 #' df <- data.frame(
-#'  x1 = rnorm(100),x2 = rnorm(100),x3 = rnorm(100),
-#'  x4 = rnorm(100), x5 = runif(100)
-#'  )
+#'   x1 = rnorm(100), x2 = rnorm(100), x3 = rnorm(100),
+#'   x4 = rnorm(100), x5 = runif(100)
+#' )
 #' df <- df %>%
-#' mutate_all(function(x){as.numeric(scale(x))})
-#' df$y <- df$x1+df$x4+df$x5
+#'   mutate_all(function(x) {
+#'     as.numeric(scale(x))
+#'   })
+#' df$y <- df$x1 + df$x4 + df$x5
 #' group_df <- data.frame(
-#'  group_name = c(1,1,1,2,2),
-#'  var_name = c('x1','x2','x3','x4','x5')
+#'   group_name = c(1, 1, 1, 2, 2),
+#'   var_name = c("x1", "x2", "x3", "x4", "x5")
 #' )
 #'
 #' sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
 #' sgb_model <- mboost(formula = as.formula(sgb_formula), data = df)
-#' summary(sgb_model)}
+#' summary(sgb_model)
+#' }
 create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
                            outcome_name = "y", group_name = "group_name",
                            var_name = "var_name", intercept = FALSE) {
-  stopifnot('Mixing parameter alpha must be numeric' = is.numeric(alpha))
-  stopifnot('Mixing parameter alpha must between zero and one' = (alpha >= 0 & alpha <= 1))
-  stopifnot('group_df must be a data.frame' = is.data.frame(group_df))
-  stopifnot('group_name and var_name have to be columns of group_df' = (group_name %in% colnames(group_df) &
-               var_name %in% colnames(group_df)))
-  if(blearner != 'bols'){
-    warning('passing a baselearner other than bols does not guarantee
-            that mboost() returns a sparse group boosting model')
+  stopifnot("Mixing parameter alpha must be numeric" = is.numeric(alpha))
+  stopifnot("Mixing parameter alpha must between zero and one" = (alpha >= 0 & alpha <= 1))
+  stopifnot("group_df must be a data.frame" = is.data.frame(group_df))
+  stopifnot("group_name and var_name have to be columns of group_df" =
+              (group_name %in% colnames(group_df) &
+    var_name %in% colnames(group_df)))
+  if (blearner != "bols") {
+    warning("passing a baselearner other than bols does not guarantee
+            that mboost() returns a sparse group boosting model")
   }
-    formula_group <- group_df %>%
-      dplyr::select(group_name,var_name) %>%
-      dplyr::group_by(group_name) %>%
-      dplyr::summarize(var_name = paste0(var_name, collapse = " , ")) %>%
-      dplyr::mutate(term = paste0(blearner, '(', var_name, ", df = ",
-                                  (1 - alpha), ', intercept=', substr(intercept,1,1), ')'))
-  formula <- paste0(paste0(blearner, '(', group_df$var_name, ', df = ',
-                           alpha, ', intercept=', substr(intercept,1,1), ')'),collapse = '+')
-  formula_group <- paste0(formula_group$term, collapse = '+')
+  formula_group <- group_df %>%
+    dplyr::select(group_name, var_name) %>%
+    dplyr::group_by(group_name) %>%
+    dplyr::summarize(var_name = paste0(var_name, collapse = " , ")) %>%
+    dplyr::mutate(term = paste0(
+      blearner, "(", var_name, ", df = ",
+      (1 - alpha), ", intercept=", substr(intercept, 1, 1), ")"
+    ))
+  formula <- paste0(paste0(
+    blearner, "(", group_df$var_name, ", df = ",
+    alpha, ", intercept=", substr(intercept, 1, 1), ")"
+  ), collapse = "+")
+  formula_group <- paste0(formula_group$term, collapse = "+")
   if (alpha == 0) {
     final_formula <- formula_group
   } else if (alpha == 1) {
@@ -70,6 +78,6 @@ create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
   } else {
     final_formula <- paste0(formula, " + ", formula_group)
   }
-  final_formula <- paste0(outcome_name, '~', final_formula)
+  final_formula <- paste0(outcome_name, "~", final_formula)
   return(final_formula)
 }
