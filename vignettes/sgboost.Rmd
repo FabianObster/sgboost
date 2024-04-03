@@ -1,0 +1,19 @@
+---
+title: "Sparse group boosing in R"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Sparse group boosing in R}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(sgboost)
+```
