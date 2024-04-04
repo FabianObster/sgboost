@@ -4,7 +4,7 @@
 #' Radar or scatter/lineplot visualizing the effects sizes relative to the variable importance
 #' in a sparse group boosting model. Works also for a regular mboost model.
 #'
-#' @param sgb_model `mboost` model to compute the variable importance for.
+#' @param sgb_model `mboost` model to be used.
 #' @param plot_type String indicating the type of visualization to use.
 #' `'radar'` refers to a radar plot using polar coordinates.
 #' Here the angle is relative to the cumulative relative importance of predictors and

@@ -6,7 +6,7 @@
 #' as an individual variable or as a group. Therefore there can be two associated effect sizes for the
 #' same variable. This function aggregates both and returns it in a dataframe.
 #'
-#' @param sgb_model `mboost` model to compute the variable importance for.
+#' @param sgb_model `mboost` model to compute the coefficients for.
 #' @importFrom dplyr filter mutate %>%
 #' @importFrom tibble rownames_to_column tibble
 #'
