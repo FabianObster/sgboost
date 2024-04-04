@@ -13,7 +13,7 @@ plot_effects(
 )
 }
 \arguments{
-\item{sgb_model}{\code{mboost} model to compute the variable importance for.}
+\item{sgb_model}{\code{mboost} model to be used.}
 
 \item{plot_type}{String indicating the type of visualization to use.
 \code{'radar'} refers to a radar plot using polar coordinates.
