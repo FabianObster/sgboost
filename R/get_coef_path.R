@@ -4,9 +4,15 @@
 #' Computes the aggregated coefficients from group and individual baselearners for each boosting iteration.
 #' @details in a sparse group boosting models a variable in a dataset can be selected
 #' as an individual variable or as a group. Therefore there can be two associated effect sizes for the
+<<<<<<< HEAD
 #' same variable. This function aggregates both and returns it in a dataframe for each boosting iteration
 #'
 #' @param sgb_model `mboost` model to compute the coefficient path for .
+=======
+#' same variable. This function aggregates both and returns it in a dataframe.
+#'
+#' @param sgb_model `mboost` model to compute the variable importance for.
+>>>>>>> dcc867a5d1a0d80ad326fa6fd71ffbb0b89c32fa
 #' @importFrom dplyr filter mutate %>%
 #' @importFrom tibble rownames_to_column tibble
 #'
@@ -14,7 +20,11 @@
 #' variable and the raw (Regression) coefficients and the dataframe `$aggregated` with the
 #' aggregated (Regression) coefficients.
 #' @export
+<<<<<<< HEAD
 #' @seealso [get_coef()]
+=======
+#'
+>>>>>>> dcc867a5d1a0d80ad326fa6fd71ffbb0b89c32fa
 #' @examples
 #' library(mboost)
 #' library(dplyr)
