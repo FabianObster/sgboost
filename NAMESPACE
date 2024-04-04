@@ -2,7 +2,6 @@
 
 export(create_formula)
 export(get_coef)
-export(get_sgb_varimp)
 export(get_varimp)
 export(plot_effects)
 export(plot_varimp)

@@ -22,7 +22,6 @@
 #' @seealso [mboost::varimp()] which this function uses.
 #'
 #' @examples
-#' \dontrun{
 #' library(mboost)
 #' library(dplyr)
 #' set.seed(1)
@@ -43,7 +42,6 @@
 #' sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
 #' sgb_varimp <- get_varimp(sgb_model)
-#' }
 get_varimp <- function(sgb_model) {
   stopifnot("Model must be of class mboost" = class(sgb_model) == "mboost")
   sgb_varimp <- mboost::varimp(sgb_model) %>%

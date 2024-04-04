@@ -31,7 +31,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' library(mboost)
 #' library(dplyr)
 #' set.seed(1)
@@ -52,7 +51,6 @@
 #' sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
 #' plot_effects(sgb_model)
-#' }
 plot_effects <- function(sgb_model, plot_type = "radar", prop = 1, n_predictors = 30,
                          max_char_length = 5) {
   stopifnot("Model must be of class mboost" = class(sgb_model) == "mboost")

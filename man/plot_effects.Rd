@@ -41,7 +41,6 @@ Radar or scatter/lineplot visualizing the effects sizes relative to the variable
 in a sparse group boosting model. Works also for a regular mboost model.
 }
 \examples{
-\dontrun{
 library(mboost)
 library(dplyr)
 set.seed(1)
@@ -62,7 +61,6 @@ group_df <- data.frame(
 sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 sgb_model <- mboost(formula = sgb_formula, data = df)
 plot_effects(sgb_model)
-}
 }
 \seealso{
 \code{\link[=get_coef]{get_coef()}}, \link{get_varimp} which this function uses.

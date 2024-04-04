@@ -24,7 +24,6 @@ of a sparse-group model in a dataframe for each predictor.
 The second one contains the aggregated relative importance of all groups vs. individual variables.
 }
 \examples{
-\dontrun{
 library(mboost)
 library(dplyr)
 set.seed(1)
@@ -45,7 +44,6 @@ group_df <- data.frame(
 sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 sgb_model <- mboost(formula = sgb_formula, data = df)
 sgb_varimp <- get_varimp(sgb_model)
-}
 }
 \seealso{
 \code{\link[mboost:varimp]{mboost::varimp()}} which this function uses.

@@ -30,7 +30,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' library(mboost)
 #' library(dplyr)
 #' set.seed(1)
@@ -51,7 +50,6 @@
 #' sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
 #' sgb_varimp <- plot_varimp(sgb_model)
-#' }
 plot_varimp <- function(sgb_model, prop = 1, n_predictors = 30, max_char_length = 15) {
   stopifnot("Model must be of class mboost" = class(sgb_model) == "mboost")
   stopifnot("prop must be numberic" = is.numeric(prop))

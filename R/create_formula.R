@@ -77,5 +77,5 @@ create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
     final_formula <- paste0(formula, " + ", formula_group)
   }
   final_formula <- paste0(outcome_name, "~", final_formula)
-  return(final_formula)
+  return(formula(final_formula))
 }

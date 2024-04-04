@@ -16,9 +16,8 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' library(mboost)
-#' library(tidyverse)
+#' library(dplyr)
 #' set.seed(1)
 #' df <- data.frame(
 #'   x1 = rnorm(100), x2 = rnorm(100), x3 = rnorm(100),
@@ -37,7 +36,6 @@
 #' sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
 #' sgb_coef <- get_coef(sgb_model)
-#' }
 get_coef <- function(sgb_model) {
   stopifnot("Model must be of class mboost" = class(sgb_model) == "mboost")
   sgb_coef <- sgb_model$coef()

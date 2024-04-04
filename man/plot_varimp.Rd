@@ -34,7 +34,6 @@ only on the plotted variables and not on all variables that were selected in the
 boosting model.
 }
 \examples{
-\dontrun{
 library(mboost)
 library(dplyr)
 set.seed(1)
@@ -55,7 +54,6 @@ group_df <- data.frame(
 sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 sgb_model <- mboost(formula = sgb_formula, data = df)
 sgb_varimp <- plot_varimp(sgb_model)
-}
 }
 \seealso{
 \link{get_varimp} which this function uses.
