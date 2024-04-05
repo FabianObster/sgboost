@@ -24,10 +24,11 @@ baselearners are being used in the fitting process. They are regularized based
 on the degrees of freedom of an individual baselearner $df(\lambda)$ and the ones
 of a group baselearner $df(\lambda^{(g)})$, such that
 $$
-df(\lambda) = \alpha, \\ 
+df(\lambda) = \alpha, 
+$$
+$$
 df(\lambda^{(g)}) = 1- \alpha.
 $$
-
 ## Installation
 
 You can install the development version of sgboost from [GitHub](https://github.com/) with:
