@@ -1,21 +1,18 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-# sgboost
-
 <!-- badges: start -->
 <!-- badges: end -->
 
-`sgboost` implements the sparse group boosting using the `mboost`
-package. A formula object defining group baselearners and individual
-baselearners are being used in the fitting process. They are regularized
-based on the degrees of freedom of an individual baselearner
-$df(\lambda)$ and the ones of a group baselearner $df(\lambda^{(g)})$,
-such that $$
-df(\lambda) = \alpha, 
-$$ $$
-df(\lambda^{(g)}) = 1- \alpha.
-$$ \## Installation
+# R-package `sgboost`
+
+Implements the sparse group boosting in conjunction with the R-package
+`mboost`. A formula object defining group baselearners and individual
+baselearners is being used in the fitting process. Regularization is
+based on the degrees of freedom of an individual baselearners
+$df(\lambda)$ and the ones of a group baselearners $df(\lambda^{(g)})$,
+such that $df(\lambda) = \alpha$ and $df(\lambda^{(g)}) = 1- \alpha$.
+
+## Installation
 
 You can install the development version of sgboost from
 [GitHub](https://github.com/) with:
@@ -32,17 +29,7 @@ This is a basic example which shows you how to solve a common problem:
 ``` r
 library(sgboost)
 library(dplyr)
-#> 
-#> Attache Paket: 'dplyr'
-#> Die folgenden Objekte sind maskiert von 'package:stats':
-#> 
-#>     filter, lag
-#> Die folgenden Objekte sind maskiert von 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 library(mboost)
-#> Lade nötiges Paket: parallel
-#> Lade nötiges Paket: stabs
 ```
 
 For a dataframe `df` and a group structure `group_df`, this example fits
