@@ -28,15 +28,15 @@ test_that("get_varimp works", {
   expect_equal(dim(sgb_varimp$group_importance)[2], 2)
   expect_equal(
     tibble(
-      reduction = c(0.588, 1.62),
+      reduction = c(1.62, 0.588),
       blearner = c(
-        "bols(x1, intercept = FALSE, df = 0.3)",
-        "bols(x4, x5, intercept = FALSE, df = 0.7)"
+        "bols(x4, x5, intercept = FALSE, df = 0.7)",
+        "bols(x1, intercept = FALSE, df = 0.3)"
       ),
-      predictor = c("x1", "x4, x5"),
-      selfreq = c(0.41, 0.59),
-      type = c("individual", "group"),
-      relative_importance = c(0.2668, 0.7332)
+      predictor = c("x4, x5", "x1"),
+      selfreq = c(0.59,0.41),
+      type = c("group", "individual"),
+      relative_importance = c(0.7332, 0.2668)
     ),
     sgb_varimp$varimp,
     tolerance = 0.011

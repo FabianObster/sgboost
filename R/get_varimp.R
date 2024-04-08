@@ -58,10 +58,11 @@ get_varimp <- function(sgb_model) {
     ) %>%
     dplyr::mutate(relative_importance = .data$reduction / sum(.data$reduction)) %>%
     dplyr::group_by(.data$type) %>%
-    dplyr::arrange(.data$reduction) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    dplyr::arrange(-.data$relative_importance)
   group_importance <- sgb_varimp %>%
     dplyr::group_by(.data$type) %>%
-    dplyr::summarize(importance = sum(.data$relative_importance))
+    dplyr::summarize(importance = sum(.data$relative_importance)) %>%
+    dplyr::arrange(-.data$importance)
   return(list(varimp = sgb_varimp, group_importance = group_importance))
 }

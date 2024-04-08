@@ -46,6 +46,7 @@ remotes::install_github(
 ```
 
 ```{r, warning=FALSE, message=FALSE}
+eval <- FALSE
 library(mboost)
 library(sgboost)
 library(dplyr)
@@ -60,8 +61,9 @@ We use the same simulated data and model structure as in the vignette of `sparse
 where the coefficient vector $\beta^*$ is specified as below, and the white noise
 $\epsilon$ follows a standard normal distribution. 
 
-```{r, warning=FALSE,message=FALSE}
+```{r, warning=FALSE,message=FALSE, eval=eval}
 #library(sgboost)
+# 10; 305, 588
 set.seed(10)
 n <- 100
 p <- 200
@@ -142,13 +144,13 @@ not centered, one should include use `intercept = TRUE`. Note that in this case
 individual baselearners will be groups of size two and the group size of group baselearners
 increases by one. 
 
-```{r}
+```{r, eval=eval}
 sgb_formula_linear <- create_formula(
-  alpha = 0.3, group_df = group_df, outcome_name = 'y', intercept = FALSE,
+  alpha = 0.4, group_df = group_df, outcome_name = 'y', intercept = FALSE,
   group_name = 'group_name', var_name = 'variable_name',
                                      )
 sgb_formula_binary <- create_formula(
-  alpha = 0.3, group_df = group_df, outcome_name = 'y_binary', intercept = FALSE,
+  alpha = 0.4, group_df = group_df, outcome_name = 'y_binary', intercept = FALSE,
   group_name = 'group_name', var_name = 'variable_name',
                                      )
 ```
@@ -157,23 +159,58 @@ pass the formula to `mboost` and use the aruments as seems appropriate.
 The main hyperparameters are `nu`and `mstop`. For model tuning the `mboost` function
 `cvrisk` can be used und plotted. `cvrisk` may be slow to run. One can run it in parallel to speed up.
 
-```{r}
-# sgb_model_linear <- mboost(formula = sgb_formula_linear, data = df,
-#                            control = boost_control(nu = 1, mstop = 600))
-# cv_sgb_model_linear <- cvrisk(sgb_model_linear,
-#                               folds = cv(model.weights(sgb_model_linear),
-#                                          type = 'kfold', B = 10))
-# sgb_model_binary <- mboost(formula = sgb_formula_binary, data = df, family = Binomial(),
-#                            control = boost_control(nu = 1, mstop = 600))
-# cv_sgb_model_binary <- cvrisk(sgb_model_binary,
-#                               folds = cv(model.weights(sgb_model_linear),
-#                                          type = 'kfold', B = 10))
-# mstop(cv_sgb_model_linear)
-# mstop(cv_sgb_model_binary)
-# plot(cv_sgb_model_linear)
-# plot(cv_sgb_model_binary)
+```{r, eval=eval}
+sgb_model_linear <- mboost(formula = sgb_formula_linear, data = df,
+                           control = boost_control(nu = 1, mstop = 600))
+cv_sgb_model_linear <- cvrisk(sgb_model_linear,
+                              folds = cv(model.weights(sgb_model_linear),
+                                         type = 'kfold', B = 10))
+sgb_model_binary <- mboost(formula = sgb_formula_binary, data = df, family = Binomial(),
+                           control = boost_control(nu = 1, mstop = 600))
+cv_sgb_model_binary <- cvrisk(sgb_model_binary,
+                              folds = cv(model.weights(sgb_model_linear),
+                                         type = 'kfold', B = 10))
+mstop(cv_sgb_model_linear)
+mstop(cv_sgb_model_binary)
+plot(cv_sgb_model_linear)
+plot(cv_sgb_model_binary)
 ```
-In this example the lowes out-of-sample risk is obtained at 497 (linear) and 494 (logistic) boosting iterations.
+In this example the lowest out-of-sample risk is obtained at 320 (linear) and 540 (logistic) boosting iterations.
 
+### Interpreting and plotting a sparse-group boosting model
+#### `plot_path`and `get_coef_path`
+`plot_path` calls `get_coef_path` to retrieve the aggregated coefficients from a
+`mboost` object for each boosting iteration and plots it, while indicating if a
+coefficient was updated by an individual variable or group.
+```{r, eval=eval}
+plot_path(sgb_model = sgb_model_linear[100]) 
+plot_path(sgb_model = sgb_model_binary[100])
+sgb_model_linear <- sgb_model_linear[320]
+sgb_model_binary <- sbb_model_binary{540}
+get_coef(sgb_model = sgb_model_linear)
+get_coef(sgb_model = sgb_model_binary)
+```
+
+#### `get_coef`
+The resulting coefficients can be retrieved through `get_coef`. 
+In a sparse group boosting models a variable in a dataset can be selected as an
+individual variable or as a group. Therefore there can be two associated effect sizes
+for the same variable. This function aggregates both and returns it in a dataframe.
+
+```{r, eval=eval}
+get_coef(sgb_model = sgb_model_linear)$aggregate %>% slice(1:10)
+get_coef(sgb_model = sgb_model_linear)$raw %>% slice(1:10)
+```
+#### `get_varimp` and `plot_varimp`
+```{r, eval=eval}
+get_varimp(sgb_model = sgb_model_binary)
+```
+
+#### `plot_effects` 
+```{r, eval=eval}
+plot_effects(sgb_model = sgb_model_binary, n_predictors = 10)
+plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = 'clock')
+plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = 'scatter')
+```
 
 [^1]: McDonald D, Liang X, Heinsfeld A, Cohen A, Yang Y, Zou H, Friedman J, Hastie T, Tibshirani R, Narasimhan B, Tay K, Simon N, Qian J, Yang J. (2022).  _Getting started with sparsegl._ <https://cran.r-project.org/web/packages/sparsegl/vignettes/sparsegl.html>.

@@ -58,7 +58,9 @@ get_coef <- function(sgb_model) {
         stringr::str_detect(predictor, ",") ~ "group",
         T ~ "individual"
       )
-    )
+    ) %>%
+    dplyr::arrange(-abs(.data$effect)) %>%
+    dplyr::filter(.data$effect != 0)
   coef_df_aggregate <- coef_df %>%
     dplyr::group_by(.data$variable) %>%
     dplyr::reframe(
@@ -66,6 +68,7 @@ get_coef <- function(sgb_model) {
       blearner = paste0(.data$blearner, collapse = "; "),
       predictor = paste0(.data$predictor, collapse = "; ")
     ) %>%
-    dplyr::arrange(abs(.data$effect))
+    dplyr::arrange(-abs(.data$effect)) %>%
+    dplyr::filter(.data$effect != 0)
   return(list(raw = coef_df, aggregated = coef_df_aggregate))
 }
