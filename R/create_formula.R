@@ -17,7 +17,7 @@
 #' @param intercept Logical, should intercept be used?
 #' @importFrom dplyr filter select group_by summarize mutate %>%
 #' @importFrom stats as.formula
-#'
+#' @importFrom rlang .data
 #' @return Character containing the formula to be passed to [mboost::mboost()]
 #'  yielding the sparse group boosting for a given value mixing parameter `alpha`.
 #' @export
@@ -56,16 +56,20 @@ create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
     warning("passing a baselearner other than bols does not guarantee
             that mboost() returns a sparse group boosting model")
   }
-  formula_group <- group_df %>%
-    dplyr::select(group_name, var_name) %>%
-    dplyr::group_by(group_name) %>%
-    dplyr::summarize(var_name = paste0(var_name, collapse = " , ")) %>%
+  var_names <- group_names <- NULL
+  formula_df <- group_df
+  formula_df$var_names <- group_df[[var_name]]
+  formula_df$group_names <- group_df[[group_name]]
+  formula_group <- formula_df %>%
+    dplyr::select(var_names, group_names) %>%
+    dplyr::group_by(.data$group_names) %>%
+    dplyr::summarize(var_names = paste0(.data$var_names, collapse = " , ")) %>%
     dplyr::mutate(term = paste0(
-      blearner, "(", var_name, ", df = ",
+      blearner, "(", .data$var_names, ", df = ",
       (1 - alpha), ", intercept=", intercept, ")"
     ))
   formula <- paste0(paste0(
-    blearner, "(", group_df$var_name, ", df = ",
+    blearner, "(", formula_df$var_names, ", df = ",
     alpha, ", intercept=", intercept, ")"
   ), collapse = "+")
   formula_group <- paste0(formula_group$term, collapse = "+")
