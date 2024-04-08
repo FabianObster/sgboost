@@ -1,10 +1,10 @@
 ---
-title: "Sparse group boosing in R"
+title: "Sparse group boosing in R: Tutorial"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Sparse group boosing in R}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  %\VignetteEncoding{UTF-8} 
 ---
 
 ```{r, include = FALSE}
@@ -14,6 +14,166 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(sgboost)
+## Introduction
+
+`sgboost` Implements the sparse group boosting in conjunction with the R-package `mboost`.
+A formula object defining group baselearners and individual
+baselearners is being used in the fitting process. Regularization is
+based on the degrees of freedom of an individual baselearners
+$df(\lambda)$ and the ones of a group baselearners $df(\lambda^{(g)})$,
+such that $df(\lambda) = \alpha$ and $df(\lambda^{(g)}) = 1- \alpha$. 
+Sparse group boosting is an alternative method to the sparse group lasso based
+on boosted Ridge regression. 
+
+
+## Installation
+
+You can install the development version of sgboost from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("FabianObster/sgboost")
 ```
+
+Vignettes are not included in the package by default. If you want to
+include vignettes, then use this modified command:
+
+```{r, eval = FALSE}
+remotes::install_github(
+  "FabianObster/sgboost", 
+  build_vignettes = TRUE, dependencies = TRUE
+)
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(mboost)
+library(sgboost)
+library(dplyr)
+library(ggplot2)
+```
+## Data setup
+We use the same simulated data and model structure as in the vignette of `sparsegl` (McDonald, Liang , Heinsfeld, 2023).[^1].  Randomly generate a $n\times p$ design matrix `X`. For the real-valued vector `y` the following two settings are being used:
+
+* Linear Regression model: $y = X\beta^* + \epsilon$.
+* Logistic regression model: $y = (y_1, y_2, \cdots, y_n)$, where $y_i \sim \text{Bernoulli}\left(\frac{1}{1 + \exp(-x_i^\top \beta^*)}\right)$, $i = 1, 2, \cdots, n,$
+
+where the coefficient vector $\beta^*$ is specified as below, and the white noise
+$\epsilon$ follows a standard normal distribution. 
+
+```{r, warning=FALSE,message=FALSE}
+#library(sgboost)
+set.seed(10)
+n <- 100
+p <- 200
+X <- matrix(data = rnorm(n * p, mean = 0, sd = 1), nrow = n, ncol = p)
+beta_star <- c(rep(5, 5), c(5, -5, 2, 0, 0), rep(-5, 5), 
+               c(2, -3, 8, 0, 0), rep(0, (p - 20)))
+groups <- rep(1:(p / 5), each = 5)
+
+# Linear regression model
+eps <- rnorm(n, mean = 0, sd = 1)
+y <- X %*% beta_star + eps
+
+# Logistic regression model
+pr <- 1 / (1 + exp(-X %*% beta_star))
+y_binary <- as.factor(rbinom(n, 1, pr))
+
+# Input data.frames
+df <- X %>%
+  as.data.frame() %>%
+  mutate_all(function(x) {
+      as.numeric(scale(x))
+    }) %>%
+  mutate(y = as.numeric(y), y_binary = y_binary)
+group_df <- data.frame(
+    group_name = groups,
+    variable_name = head(colnames(df),-2)
+  )
+```
+## Optimization Problem
+The sparse group-boosting problem is formulated as the sum of mean squared error (linear regression) or logistic loss (logistic regression) within each boosting iteration:
+
+* Linear regression: 
+    + Group baselearner: \newline $$\min_{g \leq G}\min_{\beta^{(g)} \in \mathbb{R}^p}\left(\frac{1}{2n} \rVert u - X^{(g)}\beta^{(g)}\rVert_2^2 + \lambda^{(g)} \rVert\beta^{(g)}\rVert_2 \right)$$
+    + Individual baselearner: \newline  $$\min_{g \leq G, j \leq p_g}\min_{\beta^{(g)}_j\in\mathbb{R}}\left(\frac{1}{2n} \rVert u - X^{(g)}_j\beta^{(g)}_j\rVert_2^2 + \lambda^{(g)}_j \rVert\beta^{(g)}_j\rVert_2 \right)$$
+
+* Logistic regression: 
+    + Group baselearner \newline
+$$\min_{g \in G}\min_{\beta^{(g)}\in\mathbb{R}}\left(\frac{1}{2n}\sum_{i=1}^n \log\left(1 + \exp\left(-y_i(x^{(g)})_i^\top\beta^{(g)}\right)\right) + \lambda^{(g)} \rVert\beta^{(g)}\rVert_2 \right) \qquad$$
+    + Individual baselearners
+$$\min_{g \in G, j \in p_g}\min_{\beta^{(g)}_j\in\mathbb{R}}\left(\frac{1}{2n}\sum_{i=1}^n \log\left(1 + \exp\left(-y_i(x^{(g)_j})_i^\top\beta^{(g)}_j\right)\right) + \lambda^{(g)}_j \rVert\beta^{(g)}_j\rVert_2 \right) \qquad$$
+where 
+* $df(\lambda^{(g)}_j) = \alpha$
+* $df(\lambda^{g}) = 1-\alpha$
+* $df(\lambda) = tr(2H_\lambda-H_\lambda^TH_\lambda)$
+* $H$ is the Ridge Hat matrix of a baselearner
+* $X^{(g)}$ is the submatrix of $X$ with columns corresponding
+to the features in group $g$.
+
+* $\beta^{(g)}$ is the corresponding coefficients of
+the features in group $g$.
+
+* $p_g$ is the number of predictors in group $g$.
+
+* $\alpha$ adjusts the weight between group and individual baselearners.
+
+* $\lambda^{(g)}, \lambda^{(g)}_j$ Ridge penalty parameters.
+* $u$ is the negative gradient vector form the previous boosting iteration.
+
+## Workflow
+To estimate, tune and interpret a sparse-group boosting model the following 
+workflow is advised
+### `create_formula`
+
+We start by creating the formula that describes the sparse group boosting 
+optimization problem as stated above. We pass three central parameters to `create_formula`
+
+* `alpha`: Mixing parameter between zero and one used for the convex combination 
+of the degrees of freedom.
+* `group_df`: data.frame containing the group structure to be used.
+* `group_name`: The name of the column in `group_df` indicates the group structure
+* `var_name`: The name of the column in `group_df` indicating the name of 
+the variables in the modelling data.frame to be used. Note that not all variables present
+on the modelling data.frame have to be in group_df. These could be ID, timestamp variables or 
+additional information one does not want to use in the model. 
+* `outcome_name`: Name of the outcome variable in the modelling data.frame
+* `intercept`: Should an intercept be used for all baselearners? If the data is
+not centered, one should include use `intercept = TRUE`. Note that in this case
+individual baselearners will be groups of size two and the group size of group baselearners
+increases by one. 
+
+```{r}
+sgb_formula_linear <- create_formula(
+  alpha = 0.3, group_df = group_df, outcome_name = 'y', intercept = FALSE,
+  group_name = 'group_name', var_name = 'variable_name',
+                                     )
+sgb_formula_binary <- create_formula(
+  alpha = 0.3, group_df = group_df, outcome_name = 'y_binary', intercept = FALSE,
+  group_name = 'group_name', var_name = 'variable_name',
+                                     )
+```
+### Model fitting and tuning
+pass the formula to `mboost` and use the aruments as seems appropriate. 
+The main hyperparameters are `nu`and `mstop`. For model tuning the `mboost` function
+`cvrisk` can be used und plotted. `cvrisk` may be slow to run. One can run it in parallel to speed up.
+
+```{r}
+# sgb_model_linear <- mboost(formula = sgb_formula_linear, data = df,
+#                            control = boost_control(nu = 1, mstop = 600))
+# cv_sgb_model_linear <- cvrisk(sgb_model_linear,
+#                               folds = cv(model.weights(sgb_model_linear),
+#                                          type = 'kfold', B = 10))
+# sgb_model_binary <- mboost(formula = sgb_formula_binary, data = df, family = Binomial(),
+#                            control = boost_control(nu = 1, mstop = 600))
+# cv_sgb_model_binary <- cvrisk(sgb_model_binary,
+#                               folds = cv(model.weights(sgb_model_linear),
+#                                          type = 'kfold', B = 10))
+# mstop(cv_sgb_model_linear)
+# mstop(cv_sgb_model_binary)
+# plot(cv_sgb_model_linear)
+# plot(cv_sgb_model_binary)
+```
+In this example the lowes out-of-sample risk is obtained at 497 (linear) and 494 (logistic) boosting iterations.
+
+
+[^1]: McDonald D, Liang X, Heinsfeld A, Cohen A, Yang Y, Zou H, Friedman J, Hastie T, Tibshirani R, Narasimhan B, Tay K, Simon N, Qian J, Yang J. (2022).  _Getting started with sparsegl._ <https://cran.r-project.org/web/packages/sparsegl/vignettes/sparsegl.html>.
