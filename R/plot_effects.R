@@ -19,6 +19,9 @@
 #' Alternative to `'prop'`.
 #' @param max_char_length The maximum character length of a predictor to be printed.
 #' Default is 5. For long variable names one may adjust this number.
+#' @param base_size The `base_size` argument to be passed to the `ggplot2` theme
+#' [ggplot2::theme_classic] to be used to control the overall size of the figure.
+#' Default value is 8.
 #' @importFrom dplyr filter mutate case_when %>%
 #' @importFrom stringr str_detect str_replace
 #' @importFrom mboost varimp
@@ -52,7 +55,7 @@
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
 #' plot_effects(sgb_model)
 plot_effects <- function(sgb_model, plot_type = "radar", prop = 1, n_predictors = 30,
-                         max_char_length = 5) {
+                         max_char_length = 5, base_size = 8) {
   stopifnot("Model must be of class mboost" = class(sgb_model) == "mboost")
   stopifnot("prop must be numberic" = is.numeric(prop))
   stopifnot("prop must be between zero and one" = prop <= 1 & prop > 0)
@@ -94,7 +97,7 @@ plot_effects <- function(sgb_model, plot_type = "radar", prop = 1, n_predictors 
     plot_out <- plotdata %>%
       ggplot2::ggplot(aes(x = .data$x, y = .data$y, xend = .data$x * 0.13, yend = .data$y * 0.13)) +
       ggplot2::geom_segment(arrow = arrow(length = unit(6, "pt")), aes(color = .data$type)) +
-      ggplot2::theme_classic() +
+      ggplot2::theme_classic(base_size = base_size) +
       ggplot2::theme(legend.title = element_blank()) +
       ggplot2::ylim(c(-max_diam * 1.2, max_diam * 1.2)) +
       xlim(c(-max_diam * 1.2, max_diam * 1.2)) +

@@ -9,7 +9,8 @@ plot_effects(
   plot_type = "radar",
   prop = 1,
   n_predictors = 30,
-  max_char_length = 5
+  max_char_length = 5,
+  base_size = 8
 )
 }
 \arguments{
@@ -32,6 +33,10 @@ Alternative to \code{'prop'}.}
 
 \item{max_char_length}{The maximum character length of a predictor to be printed.
 Default is 5. For long variable names one may adjust this number.}
+
+\item{base_size}{The \code{base_size} argument to be passed to the \code{ggplot2} theme
+\link[ggplot2:ggtheme]{ggplot2::theme_classic} to be used to control the overall size of the figure.
+Default value is 8.}
 }
 \value{
 \code{ggplot2} object mapping the effect sizes and variable importance.

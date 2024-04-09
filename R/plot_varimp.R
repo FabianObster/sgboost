@@ -18,6 +18,9 @@
 #' @param max_char_length The maximum character length of a predictor to be printed.
 #' Default is 15. For larger groups or long variable names one may adjust this number to
 #' differentiate variables from groups.
+#' @param base_size The `base_size` argument to be passed to the `ggplot2` theme
+#' [ggplot2::theme_bw] to be used to control the overall size of the figure.
+#' Default value is 8.
 #' @importFrom dplyr filter  arrange mutate filter group_by ungroup mutate %>%
 #' @importFrom stringr str_detect
 #' @importFrom mboost varimp
@@ -50,7 +53,8 @@
 #' sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
 #' sgb_varimp <- plot_varimp(sgb_model)
-plot_varimp <- function(sgb_model, prop = 1, n_predictors = 30, max_char_length = 15) {
+plot_varimp <- function(sgb_model, prop = 1, n_predictors = 30, max_char_length = 15,
+                        base_size = 8) {
   stopifnot("Model must be of class mboost" = class(sgb_model) == "mboost")
   stopifnot("prop must be numberic" = is.numeric(prop))
   stopifnot("prop must be between zero and one" = prop <= 1 & prop > 0)
@@ -92,7 +96,7 @@ plot_varimp <- function(sgb_model, prop = 1, n_predictors = 30, max_char_length 
     coord_flip() +
     xlab("Predictor") +
     ylab("Relative importance") +
-    theme_bw() +
+    theme_bw(base_size = base_size) +
     theme(legend.title = element_blank())
   return(plot_out)
 }

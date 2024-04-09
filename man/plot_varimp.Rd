@@ -4,7 +4,13 @@
 \alias{plot_varimp}
 \title{Variable importance bar plot of a sparse group boosting model}
 \usage{
-plot_varimp(sgb_model, prop = 1, n_predictors = 30, max_char_length = 15)
+plot_varimp(
+  sgb_model,
+  prop = 1,
+  n_predictors = 30,
+  max_char_length = 15,
+  base_size = 8
+)
 }
 \arguments{
 \item{sgb_model}{\code{mboost} model to plot the variable importance for.}
@@ -20,6 +26,10 @@ Alternative to \code{'prop'}.}
 \item{max_char_length}{The maximum character length of a predictor to be printed.
 Default is 15. For larger groups or long variable names one may adjust this number to
 differentiate variables from groups.}
+
+\item{base_size}{The \code{base_size} argument to be passed to the \code{ggplot2} theme
+\link[ggplot2:ggtheme]{ggplot2::theme_bw} to be used to control the overall size of the figure.
+Default value is 8.}
 }
 \value{
 object of type \code{ggplot2}.

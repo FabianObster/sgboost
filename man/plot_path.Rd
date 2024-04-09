@@ -4,13 +4,17 @@
 \alias{plot_path}
 \title{Coefficient path of a sparse group boosting model}
 \usage{
-plot_path(sgb_model, max_char_length = 5)
+plot_path(sgb_model, max_char_length = 5, base_size = 8)
 }
 \arguments{
 \item{sgb_model}{\code{mboost} model to plot the coefficient path for.}
 
 \item{max_char_length}{The maximum character length of a predictor to be printed.
 Default is 5. For long variable names one may adjust this number.}
+
+\item{base_size}{The \code{base_size} argument to be passed to the \code{ggplot2} theme
+\link[ggplot2:ggtheme]{ggplot2::theme_bw} to be used to control the overall size of the figure.
+Default value is 8.}
 }
 \value{
 \code{ggplot2} object mapping the effect sizes and variable importance.
