@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introduction
+# Introduction
 
 `sgboost` Implements the sparse group boosting in conjunction with the R-package `mboost`.
 A formula object defining group baselearners and individual
@@ -26,7 +26,7 @@ Sparse group boosting is an alternative method to the sparse group lasso based
 on boosted Ridge regression. 
 
 
-## Installation
+# Installation
 
 You can install the development version of sgboost from [GitHub](https://github.com/) with:
 
@@ -46,13 +46,13 @@ remotes::install_github(
 ```
 
 ```{r, warning=FALSE, message=FALSE}
-eval <- FALSE
+eval <- TRUE
 library(mboost)
 library(sgboost)
 library(dplyr)
 library(ggplot2)
 ```
-## Data setup
+# Data setup
 We use the same simulated data and model structure as in the vignette of `sparsegl` (McDonald, Liang , Heinsfeld, 2023).[^1].  Randomly generate a $n\times p$ design matrix `X`. For the real-valued vector `y` the following two settings are being used:
 
 * Linear Regression model: $y = X\beta^* + \epsilon$.
@@ -92,7 +92,7 @@ group_df <- data.frame(
     variable_name = head(colnames(df),-2)
   )
 ```
-## Optimization Problem
+# Optimization Problem
 The sparse group-boosting problem is formulated as the sum of mean squared error (linear regression) or logistic loss (logistic regression) within each boosting iteration:
 
 * Linear regression: 
@@ -122,13 +122,14 @@ the features in group $g$.
 * $\lambda^{(g)}, \lambda^{(g)}_j$ Ridge penalty parameters.
 * $u$ is the negative gradient vector form the previous boosting iteration.
 
-## Workflow
+# Workflow
 To estimate, tune and interpret a sparse-group boosting model the following 
 workflow is advised
-### `create_formula`
+
+## Define model
 
 We start by creating the formula that describes the sparse group boosting 
-optimization problem as stated above. We pass three central parameters to `create_formula`
+optimization problem as stated above. We pass three central parameters to `create_formula`.
 
 * `alpha`: Mixing parameter between zero and one used for the convex combination 
 of the degrees of freedom.
@@ -154,7 +155,9 @@ sgb_formula_binary <- create_formula(
   group_name = 'group_name', var_name = 'variable_name',
                                      )
 ```
-### Model fitting and tuning
+
+## Model fitting and tuning
+
 pass the formula to `mboost` and use the aruments as seems appropriate. 
 The main hyperparameters are `nu`and `mstop`. For model tuning the `mboost` function
 `cvrisk` can be used und plotted. `cvrisk` may be slow to run. One can run it in parallel to speed up.
@@ -162,55 +165,85 @@ The main hyperparameters are `nu`and `mstop`. For model tuning the `mboost` func
 ```{r, eval=eval}
 sgb_model_linear <- mboost(formula = sgb_formula_linear, data = df,
                            control = boost_control(nu = 1, mstop = 600))
-cv_sgb_model_linear <- cvrisk(sgb_model_linear,
-                              folds = cv(model.weights(sgb_model_linear),
-                                         type = 'kfold', B = 10))
+# cv_sgb_model_linear <- cvrisk(sgb_model_linear,
+#                               folds = cv(model.weights(sgb_model_linear),
+#                                          type = 'kfold', B = 10))
 sgb_model_binary <- mboost(formula = sgb_formula_binary, data = df, family = Binomial(),
                            control = boost_control(nu = 1, mstop = 600))
-cv_sgb_model_binary <- cvrisk(sgb_model_binary,
-                              folds = cv(model.weights(sgb_model_linear),
-                                         type = 'kfold', B = 10))
-mstop(cv_sgb_model_linear)
-mstop(cv_sgb_model_binary)
-plot(cv_sgb_model_linear)
-plot(cv_sgb_model_binary)
+# cv_sgb_model_binary <- cvrisk(sgb_model_binary,
+#                               folds = cv(model.weights(sgb_model_linear),
+#                                          type = 'kfold', B = 10))
+# mstop(cv_sgb_model_linear)
+# mstop(cv_sgb_model_binary)
+# plot(cv_sgb_model_linear)
+# plot(cv_sgb_model_binary)
 ```
 In this example the lowest out-of-sample risk is obtained at 320 (linear) and 540 (logistic) boosting iterations.
 
-### Interpreting and plotting a sparse-group boosting model
-#### `plot_path`and `get_coef_path`
-`plot_path` calls `get_coef_path` to retrieve the aggregated coefficients from a
-`mboost` object for each boosting iteration and plots it, while indicating if a
-coefficient was updated by an individual variable or group.
-```{r, eval=eval}
-plot_path(sgb_model = sgb_model_linear[100]) 
-plot_path(sgb_model = sgb_model_binary[100])
-sgb_model_linear <- sgb_model_linear[320]
-sgb_model_binary <- sbb_model_binary{540}
-get_coef(sgb_model = sgb_model_linear)
-get_coef(sgb_model = sgb_model_binary)
-```
+## Interpreting and plotting a sparse-group boosting model
+`sgboost` has useful functions to understand sparse-group boosting models and 
+reflect that final model estimates of a specific variable in the dataset can be attributed
+to group baselearners as well as individual baseleraners depending on the boosting iteration
 
-#### `get_coef`
+### Variable importance
+A good starting point for understanding a sparse-group boosting model is the 
+variable importance. Generally the variable importance can be defined as the 
+relative contriubtion of each predictor to the overall reduction of the loss function
+(negative log likelihood). This can be done for each baselearner differentiating 
+between group and individual variable or aggregated for each variable in the dataset.
+`get_varimp` returns both in a data.frame. As well as the total importance of all
+groups vs. individual variables. In `plot_varimp` one can indicate the maximum 
+number of predictors to be printed through `n_predictors` or the maximal 
+variable importance that the most important predictors combined can achieve `prop`.
+Through both parameters the number of printed entries can be reduced. Note that
+in this case the relative importance of groups in the legend is based only on the
+plotted variables and not the ones removed.
+```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
+get_varimp(sgb_model = sgb_model_binary)
+plot_varimp(sgb_model = sgb_model_binary, n_predictors = 10) + theme_bw(base_size = 8)
+```
+### Resulting model coefficients
+
 The resulting coefficients can be retrieved through `get_coef`. 
 In a sparse group boosting models a variable in a dataset can be selected as an
 individual variable or as a group. Therefore there can be two associated effect sizes
-for the same variable. This function aggregates both and returns it in a dataframe.
+for the same variable. This function aggregates both and returns it in a data.frame
+sorted by the effect size `'effect'`.
 
-```{r, eval=eval}
-get_coef(sgb_model = sgb_model_linear)$aggregate %>% slice(1:10)
-get_coef(sgb_model = sgb_model_linear)$raw %>% slice(1:10)
-```
-#### `get_varimp` and `plot_varimp`
-```{r, eval=eval}
-get_varimp(sgb_model = sgb_model_binary)
+```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
+get_coef(sgb_model = sgb_model_linear)$aggregate %>% slice(1:10) 
+get_coef(sgb_model = sgb_model_linear)$raw %>% slice(1:10) 
 ```
 
-#### `plot_effects` 
-```{r, eval=eval}
-plot_effects(sgb_model = sgb_model_binary, n_predictors = 10)
-plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = 'clock')
-plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = 'scatter')
+### Plotting effect sizes and importance 
+
+With `plot_effects` we can plot the effect sizes of the sparse-group boosting model in relation to 
+the relative importance to get an overall picture of the model. 
+Throug the parameter `'plot_type'` one can choose the type of visualization.
+`'radar'` refers to a radar plot using polar coordinates.
+Here the angle is relative to the cumulative relative importance of predictors and
+the radius is proportional to the effect size. `'clock'` does the same as `'radar'` but uses clock coordinates
+instead of polar coordinates. `'scatter'` uses the effect size as y-coordinate and the cumulative relative
+importance as x-axis in a classical Scatter plot.
+```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
+plot_effects(sgb_model = sgb_model_binary, n_predictors = 10) + theme_bw(base_size = 8)
+plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = 'clock') + theme_bw(base_size = 8)
+plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = 'scatter') + theme_bw(base_size = 8)
 ```
+
+### Coefficient path
+
+`plot_path` calls `get_coef_path` to retrieve the aggregated coefficients from a
+`mboost` object for each boosting iteration and plots it, while indicating if a
+coefficient was updated by an individual variable or group.
+```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
+plot_path(sgb_model = sgb_model_linear[100]) + theme_bw(base_size = 8)
+plot_path(sgb_model = sgb_model_binary[100])+ theme_bw(base_size = 8)
+sgb_model_linear <- sgb_model_linear[320]
+sgb_model_binary <- sgb_model_binary[540]
+```
+
+
+
 
 [^1]: McDonald D, Liang X, Heinsfeld A, Cohen A, Yang Y, Zou H, Friedman J, Hastie T, Tibshirani R, Narasimhan B, Tay K, Simon N, Qian J, Yang J. (2022).  _Getting started with sparsegl._ <https://cran.r-project.org/web/packages/sparsegl/vignettes/sparsegl.html>.
