@@ -1,11 +1,11 @@
-#' Coefficient path of a sparse group boosting model
+#' Coefficient path of a sparse-group boosting model
 #'
 #' @description
-#' Shows how the effect sizes change through the boosting iterations
-#' in a sparse group boosting model. Works also for a regular mboost model.
-#' Color indicates the selection group or individual variables within a boosting iteration.
+#' Shows how the effect sizes change throughout the boosting iterations
+#' in a sparse-group boosting model. Works also for a regular mboost models.
+#' Color indicates the selection of group or individual variables within a boosting iteration.
 #'
-#' @param sgb_model `mboost` model to plot the coefficient path for.
+#' @param sgb_model Model of type `mboost` to be used.
 #' @param max_char_length The maximum character length of a predictor to be printed.
 #' Default is 5. For long variable names one may adjust this number.
 #' @param base_size The `base_size` argument to be passed to the `ggplot2` theme
@@ -17,7 +17,7 @@
 #' @import ggplot2
 #'
 #' @returns `ggplot2` object mapping the effect sizes and variable importance.
-#' @seealso [sgboost::get_coef()] which this function uses.
+#' @seealso [sgboost::get_coef_path()] which this function uses.
 #' @export
 #'
 #' @examples

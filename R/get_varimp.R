@@ -1,19 +1,19 @@
-#' Variable importance of a sparse group boosting model
+#' Variable importance of a sparse-group boosting model
 #'
 #' @description
-#'  Variable importance is comuted as relative reduction of loss-function attributed
+#'  Variable importance is computed as relative reduction of loss-function attributed
 #'  to each predictor (groups and individual variables).
-#'  Returns a list of two dataframes. The first contains the variable importance
-#'  of a sparse-group model in a dataframe for each predictor.
+#'  Returns a list of two data.frames. The first contains the variable importance
+#'  of a sparse-group model in a data.frame for each predictor.
 #'  The second one contains the aggregated relative importance of all groups vs. individual variables.
 #'
-#' @param sgb_model `mboost` model to compute the variable importance for.
+#' @param sgb_model Model of type `mboost` to compute the variable importance for.
 #' @importFrom dplyr filter mutate %>%
 #' @importFrom stringr str_detect
 #' @importFrom mboost varimp
 #' @importFrom rlang .data
 #'
-#' @return List of two dataframes. `$raw` contains the variables, group structure and
+#' @return List of two data.frames. `$raw` contains the name of the variables, group structure and
 #' variable importance on both group and individual variable basis.
 #' `$group_importance` contains the the aggregated relative importance of all
 #' group baselearners and of all individual variables.

@@ -8,7 +8,7 @@
 #' only on the plotted variables and not on all variables that were selected in the sparse-group
 #' boosting model.
 #'
-#' @param sgb_model `mboost` model to plot the variable importance for.
+#' @param sgb_model Model of type `mboost` to plot the variable importance.
 #' @param prop Numeric value indicating the maximum proportion of explained importance. Default value is one,
 #' meaning all predictors are plotted. By setting prop smaller than one the number of
 #' plotted variables can be reduced. One can also use `'n_predictors'` for limiting

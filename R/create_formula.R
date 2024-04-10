@@ -1,24 +1,25 @@
 #' Create a sparse-group boosting formula
 #'
 #' @description
-#' Creates a `mboost` formula that allows to fit a sparse group boosting model based on
+#' Creates a `mboost` formula that allows to fit a sparse-group boosting model based on
 #' boosted Ridge Regression with mixing parameter `alpha`. The formula consists of a
 #' group baselearner part with degrees of freedom
-#' 1-alpha and individual baselearners with degrees of freedom `alpha`.
+#' 1-`alpha` and individual baselearners with degrees of freedom `alpha`.
 #'
 #' @param alpha Numeric mixing parameter. For alpha = 0 only group baselearners and for
 #' alpha = 1 only individual baselearners are defined.
-#' @param group_df Dataframe containing variable names with group structure.
+#' @param group_df input data.frame containing variable names with group structure.
 #' @param var_name Name of column in group_df containing the variable names
-#' to be used as predictors.
+#' to be used as predictors. Default is `"var_name"`
 #' @param group_name Name of column in group_df indicating the group structure of the variables.
+#' Default is `"group_name`.
 #' @param blearner Type of baselearner. Default is `'bols'`.
-#' @param outcome_name Name of dependent variable.
+#' @param outcome_name String indicating the name of dependent variable. Default is `"y"`
 #' @param intercept Logical, should intercept be used?
 #' @importFrom dplyr select group_by summarize mutate %>%
 #' @importFrom rlang .data
 #' @return Character containing the formula to be passed to [mboost::mboost()]
-#'  yielding the sparse group boosting for a given value mixing parameter `alpha`.
+#'  yielding the sparse-group boosting for a given value mixing parameter `alpha`.
 #' @export
 #'
 #' @examples
@@ -42,7 +43,7 @@
 #' sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
 #' summary(sgb_model)
-create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
+create_formula <- function(alpha = 0.3, group_df = NULL, blearner = "bols",
                            outcome_name = "y", group_name = "group_name",
                            var_name = "var_name", intercept = FALSE) {
   stopifnot("Mixing parameter alpha must be numeric" = is.numeric(alpha))
@@ -53,7 +54,7 @@ create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
     var_name %in% colnames(group_df)))
   if (blearner != "bols") {
     warning("passing a baselearner other than bols does not guarantee
-            that mboost() returns a sparse group boosting model")
+            that mboost() returns a sparse-group boosting model")
   }
   var_names <- group_names <- NULL
   formula_df <- group_df

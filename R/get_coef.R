@@ -2,17 +2,18 @@
 #'
 #' @description
 #' Computes the aggregated coefficients from group and individual baselearners.
+#' Also returns the raw coefficients associated with each baselearner.
 #' @details in a sparse group boosting models a variable in a dataset can be selected
 #' as an individual variable or as a group. Therefore there can be two associated effect sizes for the
-#' same variable. This function aggregates both and returns it in a dataframe.
+#' same variable. This function aggregates both and returns it in a data.frame.
 #'
-#' @param sgb_model `mboost` model to compute the coefficients for.
+#' @param sgb_model Model of type `mboost` to compute the coefficients for.
 #' @importFrom dplyr filter mutate %>%
 #' @importFrom tibble rownames_to_column tibble
 #' @importFrom stringr str_replace str_detect
 #'
-#' @return List of dataframes containing the a dataframe `$raw` with the
-#' variable and the raw (Regression) coefficients and the dataframe `$aggregated` with the
+#' @return List of data.frames containing the a data.frame `'$raw'` with the
+#' variable and the raw (Regression) coefficients and the data.frame `'$aggregated'` with the
 #' aggregated (Regression) coefficients.
 #' @export
 #'

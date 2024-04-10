@@ -1,16 +1,16 @@
-#' Path of aggregated and raw coefficients in a sparse group boosting model
+#' Path of aggregated and raw coefficients in a sparse-group boosting model
 #'
 #' @description
 #' Computes the aggregated coefficients from group and individual baselearners for each boosting iteration.
-#' @details in a sparse group boosting models a variable in a dataset can be selected
+#' @details in a sparse-group boosting models a variable in a dataset can be selected
 #' as an individual variable or as a group. Therefore there can be two associated effect sizes for the
-#' same variable. This function aggregates both and returns it in a dataframe for each boosting iteration
+#' same variable. This function aggregates both and returns it in a data.frame for each boosting iteration
 #'
-#' @param sgb_model `mboost` model to compute the coefficient path for .
+#' @param sgb_model Model of type `mboost` to compute the coefficient path for .
 #' @importFrom dplyr mutate %>%
 #'
-#' @return List of dataframes containing the a dataframe `$raw` with the
-#' variable and the raw (Regression) coefficients and the dataframe `$aggregated` with the
+#' @return List of data.frames containing the a data.frame `$raw` with the
+#' variable and the raw (Regression) coefficients and the data.frame `$aggregated` with the
 #' aggregated (Regression) coefficients.
 #' @export
 #' @seealso [get_coef()]
