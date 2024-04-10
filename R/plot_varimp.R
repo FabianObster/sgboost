@@ -57,8 +57,10 @@ plot_varimp <- function(sgb_model, prop = 0, n_predictors = 30, max_char_length 
   stopifnot("Model must be of class mboost" = class(sgb_model) == "mboost")
   stopifnot("prop must be numberic" = is.numeric(prop))
   stopifnot("prop must be between zero and one" = prop <= 1 & prop >= 0)
-  stopifnot("n_predictors must be a positive number" =
-              is.numeric(n_predictors) & n_predictors > 0)
+  stopifnot(
+    "n_predictors must be a positive number" =
+      is.numeric(n_predictors) & n_predictors > 0
+  )
   stopifnot(
     "max_char_length must be a positive number" =
       is.numeric(max_char_length) & max_char_length > 0

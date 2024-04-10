@@ -38,7 +38,7 @@ include vignettes, then use this modified command:
 
 ```{r, eval = FALSE}
 remotes::install_github(
-  "FabianObster/sgboost", 
+  "FabianObster/sgboost",
   build_vignettes = TRUE, dependencies = TRUE
 )
 ```
@@ -60,14 +60,16 @@ where the coefficient vector $\beta^*$ is specified as below, and the white nois
 $\epsilon$ follows a standard normal distribution. 
 
 ```{r, warning=FALSE,message=FALSE, eval=eval}
-#library(sgboost)
+# library(sgboost)
 # 10; 305, 588
 set.seed(10)
 n <- 100
 p <- 200
 X <- matrix(data = rnorm(n * p, mean = 0, sd = 1), nrow = n, ncol = p)
-beta_star <- c(rep(5, 5), c(5, -5, 2, 0, 0), rep(-5, 5), 
-               c(2, -3, 8, 0, 0), rep(0, (p - 20)))
+beta_star <- c(
+  rep(5, 5), c(5, -5, 2, 0, 0), rep(-5, 5),
+  c(2, -3, 8, 0, 0), rep(0, (p - 20))
+)
 groups <- rep(1:(p / 5), each = 5)
 
 # Linear regression model
@@ -82,13 +84,13 @@ y_binary <- as.factor(rbinom(n, 1, pr))
 df <- X %>%
   as.data.frame() %>%
   mutate_all(function(x) {
-      as.numeric(scale(x))
-    }) %>%
+    as.numeric(scale(x))
+  }) %>%
   mutate(y = as.numeric(y), y_binary = y_binary)
 group_df <- data.frame(
-    group_name = groups,
-    variable_name = head(colnames(df),-2)
-  )
+  group_name = groups,
+  variable_name = head(colnames(df), -2)
+)
 ```
 # Optimization Problem
 The sparse-group-boosting problem is formulated as the sum of mean squared error (linear regression) or logistic loss (logistic regression) within each boosting iteration:
@@ -146,13 +148,13 @@ baselearners increases by one.
 
 ```{r, eval=eval}
 sgb_formula_linear <- create_formula(
-  alpha = 0.4, group_df = group_df, outcome_name = 'y', intercept = FALSE,
-  group_name = 'group_name', var_name = 'variable_name',
-                                     )
+  alpha = 0.4, group_df = group_df, outcome_name = "y", intercept = FALSE,
+  group_name = "group_name", var_name = "variable_name",
+)
 sgb_formula_binary <- create_formula(
-  alpha = 0.4, group_df = group_df, outcome_name = 'y_binary', intercept = FALSE,
-  group_name = 'group_name', var_name = 'variable_name',
-                                     )
+  alpha = 0.4, group_df = group_df, outcome_name = "y_binary", intercept = FALSE,
+  group_name = "group_name", var_name = "variable_name",
+)
 ```
 
 ## Model fitting and tuning
@@ -163,13 +165,17 @@ The main hyperparameters are `nu`and `mstop`. For model tuning, the `mboost` fun
 parallel to speed up.
 
 ```{r, eval=eval}
-sgb_model_linear <- mboost(formula = sgb_formula_linear, data = df,
-                           control = boost_control(nu = 1, mstop = 600))
+sgb_model_linear <- mboost(
+  formula = sgb_formula_linear, data = df,
+  control = boost_control(nu = 1, mstop = 600)
+)
 # cv_sgb_model_linear <- cvrisk(sgb_model_linear,
 #                               folds = cv(model.weights(sgb_model_linear),
 #                                          type = 'kfold', B = 10))
-sgb_model_binary <- mboost(formula = sgb_formula_binary, data = df, family = Binomial(),
-                           control = boost_control(nu = 1, mstop = 600))
+sgb_model_binary <- mboost(
+  formula = sgb_formula_binary, data = df, family = Binomial(),
+  control = boost_control(nu = 1, mstop = 600)
+)
 # cv_sgb_model_binary <- cvrisk(sgb_model_binary,
 #                               folds = cv(model.weights(sgb_model_linear),
 #                                          type = 'kfold', B = 10))
@@ -219,7 +225,7 @@ groups, one can use the aggregated coefficients from `get_coef`.
 ```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
 get_varimp(sgb_model = sgb_model_linear)$varimp %>% slice(1:10)
 get_varimp(sgb_model = sgb_model_linear)$group_importance
-plot_varimp(sgb_model = sgb_model_linear, n_predictors = 15) 
+plot_varimp(sgb_model = sgb_model_linear, n_predictors = 15)
 ```
 
 ### Resulting model coefficients
@@ -231,8 +237,8 @@ for the same variable. This function aggregates both and returns them in a data.
 sorted by the effect size `'effect'`.
 
 ```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
-get_coef(sgb_model = sgb_model_linear)$aggregate %>% slice(1:10) 
-get_coef(sgb_model = sgb_model_linear)$raw %>% slice(1:10) 
+get_coef(sgb_model = sgb_model_linear)$aggregate %>% slice(1:10)
+get_coef(sgb_model = sgb_model_linear)$raw %>% slice(1:10)
 ```
 
 ### Plotting effect sizes and importance 
@@ -247,9 +253,9 @@ but uses clock coordinates instead of polar coordinates. `'scatter'` uses the
 effect size as y-coordinate and the cumulative relative importance as x-axis in 
 a classical Scatter plot.
 ```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
-plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, base_size = 10) 
-plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = 'clock', base_size = 10) 
-plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = 'scatter', base_size = 10)
+plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, base_size = 10)
+plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = "clock", base_size = 10)
+plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = "scatter", base_size = 10)
 ```
 
 ### Coefficient path

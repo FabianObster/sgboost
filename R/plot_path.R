@@ -47,20 +47,24 @@ plot_path <- function(sgb_model, max_char_length = 5, base_size = 8) {
     "max_char_length must be a positive number" =
       is.numeric(max_char_length) & max_char_length > 0
   )
- sgb_coef_path <- get_coef_path(sgb_model)
- plotdata <- sgb_coef_path$aggregated %>%
-   dplyr::mutate(
-   type = dplyr::case_when(
-     stringr::str_detect(.data$predictor, ",") ~ "group",
-     T ~ "individual"
-   ))
- plot_out <- plotdata %>%
-   ggplot2::ggplot(aes(x = .data$iteration, y = .data$effect, group = .data$variable, color = .data$type)) +
-   ggplot2::geom_point(aes(color = .data$type), size = 0.2) + ggplot2::geom_line() + ggplot2::theme_bw(base_size = 8) +
-   ggplot2::geom_label(aes(x = .data$iteration*1.02, y = .data$effect, label = .data$variable),
-                       data = plotdata %>% dplyr::filter(.data$iteration == mboost::mstop(sgb_model)),
-                       size = base_size/4) +
-   ggplot2::theme(legend.title = element_blank()) +
-   ggplot2::geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey')
+  sgb_coef_path <- get_coef_path(sgb_model)
+  plotdata <- sgb_coef_path$aggregated %>%
+    dplyr::mutate(
+      type = dplyr::case_when(
+        stringr::str_detect(.data$predictor, ",") ~ "group",
+        T ~ "individual"
+      )
+    )
+  plot_out <- plotdata %>%
+    ggplot2::ggplot(aes(x = .data$iteration, y = .data$effect, group = .data$variable, color = .data$type)) +
+    ggplot2::geom_point(aes(color = .data$type), size = 0.2) +
+    ggplot2::geom_line() +
+    ggplot2::theme_bw(base_size = 8) +
+    ggplot2::geom_label(aes(x = .data$iteration * 1.02, y = .data$effect, label = .data$variable),
+      data = plotdata %>% dplyr::filter(.data$iteration == mboost::mstop(sgb_model)),
+      size = base_size / 4
+    ) +
+    ggplot2::theme(legend.title = element_blank()) +
+    ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "grey")
   return(plot_out)
 }

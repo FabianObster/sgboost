@@ -57,8 +57,10 @@ plot_effects <- function(sgb_model, plot_type = "radar", prop = 0, n_predictors 
   stopifnot("Model must be of class mboost" = class(sgb_model) == "mboost")
   stopifnot("prop must be numberic" = is.numeric(prop))
   stopifnot("prop must be between zero and one" = prop <= 1 & prop >= 0)
-  stopifnot("n_predictors must be a positive number" =
-              is.numeric(n_predictors) & n_predictors > 0)
+  stopifnot(
+    "n_predictors must be a positive number" =
+      is.numeric(n_predictors) & n_predictors > 0
+  )
   stopifnot(
     "max_char_length must be a positive number" =
       is.numeric(max_char_length) & max_char_length > 0
@@ -68,11 +70,14 @@ plot_effects <- function(sgb_model, plot_type = "radar", prop = 0, n_predictors 
     dplyr::mutate(cum_importance = cumsum(.data$relative_importance)) %>%
     dplyr::filter(.data$relative_importance >= prop) %>%
     dplyr::slice(1:n_predictors) %>%
-    dplyr::mutate(predictor = dplyr::case_when(.data$predictor == "(Intercept)" ~ "I",
-                                               T ~ .data$predictor))
+    dplyr::mutate(predictor = dplyr::case_when(
+      .data$predictor == "(Intercept)" ~ "I",
+      T ~ .data$predictor
+    ))
   sgb_effects <- get_coef(sgb_model)$raw
   plotdata <- dplyr::inner_join(sgb_effects, sgb_varimp,
-                                by = c("predictor", "blearner", "type"))
+    by = c("predictor", "blearner", "type")
+  )
   if (sum(nchar(plotdata$variable) > max_char_length) >= 1) {
     message("The number characters of some predictors were reduced.
             Adjust with max_char_length")
@@ -112,18 +117,23 @@ plot_effects <- function(sgb_model, plot_type = "radar", prop = 0, n_predictors 
         data = data.frame(),
         linetype = 2, color = "grey"
       ) +
-      ggplot2::geom_curve(aes(x = .data$x, y = .data$y,
-                              xend = max_lim * 1.15 * cos(pi * 0.05),
-                              yend = max_lim * 1.15 * sin(pi * 0.05)),
+      ggplot2::geom_curve(
+        aes(
+          x = .data$x, y = .data$y,
+          xend = max_lim * 1.15 * cos(pi * 0.05),
+          yend = max_lim * 1.15 * sin(pi * 0.05)
+        ),
         data = data.frame(x = max_lim * 1.15, y = 0, xend = max_lim * 1.15, yend = 0.25),
         arrow = arrow(length = unit(6, "pt")), angle = 0, color = "grey"
       ) +
       ggplot2::geom_label(aes(color = .data$type, label = .data$variable),
-        fontface = "bold", alpha = 0.9, size = base_size/4
+        fontface = "bold", alpha = 0.9, size = base_size / 4
       ) +
-      ggplot2::geom_label(aes(x = .data$x / 2, y = .data$y / 2,
-                              label = round(.data$effect, 2)), size = base_size/6, alpha = 0.9) +
-      ggplot2::geom_label(aes(x = 0, y = 0, label = "y"), alpha = 0.5, size = base_size/2) +
+      ggplot2::geom_label(aes(
+        x = .data$x / 2, y = .data$y / 2,
+        label = round(.data$effect, 2)
+      ), size = base_size / 6, alpha = 0.9) +
+      ggplot2::geom_label(aes(x = 0, y = 0, label = "y"), alpha = 0.5, size = base_size / 2) +
       ggplot2::xlab("") +
       ggplot2::ylab("")
   } else if (plot_type == "clock") {
@@ -136,10 +146,14 @@ plot_effects <- function(sgb_model, plot_type = "radar", prop = 0, n_predictors 
     max_lim <- max(abs(c(plotdata$x, plotdata$y)))
     max_diam <- max(abs(plotdata$effect))
     plot_out <- plotdata %>%
-      ggplot2::ggplot(aes(x = .data$x, y = .data$y,
-                          xend = .data$x * 0.13, yend = .data$y * 0.13)) +
-      ggplot2::geom_segment(arrow = arrow(length = unit(6, "pt")),
-                            aes(color = .data$type)) +
+      ggplot2::ggplot(aes(
+        x = .data$x, y = .data$y,
+        xend = .data$x * 0.13, yend = .data$y * 0.13
+      )) +
+      ggplot2::geom_segment(
+        arrow = arrow(length = unit(6, "pt")),
+        aes(color = .data$type)
+      ) +
       ggplot2::theme_classic(base_size = base_size) +
       ggplot2::theme(legend.title = element_blank()) +
       ggplot2::ylim(c(-max_diam * 1.2, max_diam * 1.2)) +
@@ -157,19 +171,26 @@ plot_effects <- function(sgb_model, plot_type = "radar", prop = 0, n_predictors 
         data = data.frame(),
         linetype = 2, color = "grey"
       ) +
-      ggplot2::geom_curve(aes(x = .data$x, y = .data$y,
-                              xend = max_lim * 1.15 * cos(pi * 0.45),
-                              yend = max_lim * 1.15 * sin(pi * 0.45)),
-        data = data.frame(x = 0, y = max_lim * 1.15,
-                          xend = max_lim * 1.15, yend = 0.25),
+      ggplot2::geom_curve(
+        aes(
+          x = .data$x, y = .data$y,
+          xend = max_lim * 1.15 * cos(pi * 0.45),
+          yend = max_lim * 1.15 * sin(pi * 0.45)
+        ),
+        data = data.frame(
+          x = 0, y = max_lim * 1.15,
+          xend = max_lim * 1.15, yend = 0.25
+        ),
         arrow = arrow(length = unit(6, "pt")), angle = 0, color = "grey"
       ) +
       ggplot2::geom_label(aes(color = .data$type, label = .data$variable),
-        fontface = "bold", alpha = 0.9, size = base_size/4
+        fontface = "bold", alpha = 0.9, size = base_size / 4
       ) +
-      ggplot2::geom_label(aes(x = .data$x / 2, y = .data$y / 2,
-                              label = round(.data$effect, 2)), size = base_size/6, alpha = 0.9) +
-      ggplot2::geom_label(aes(x = 0, y = 0, label = "y"), alpha = 0.5, size = base_size/2) +
+      ggplot2::geom_label(aes(
+        x = .data$x / 2, y = .data$y / 2,
+        label = round(.data$effect, 2)
+      ), size = base_size / 6, alpha = 0.9) +
+      ggplot2::geom_label(aes(x = 0, y = 0, label = "y"), alpha = 0.5, size = base_size / 2) +
       ggplot2::xlab("") +
       ggplot2::ylab("")
   } else if (plot_type == "scatter") {
@@ -183,10 +204,12 @@ plot_effects <- function(sgb_model, plot_type = "radar", prop = 0, n_predictors 
         x = .data$cum_importance, y = 0, xend = .data$cum_importance,
         yend = .data$effect, color = .data$type
       ), angle = 0) +
-      ggplot2::geom_label(aes(x = .data$cum_importance, y = .data$effect / 2,
-                              label = round(.data$effect, 2)), size = base_size/6, alpha = 0.9) +
+      ggplot2::geom_label(aes(
+        x = .data$cum_importance, y = .data$effect / 2,
+        label = round(.data$effect, 2)
+      ), size = base_size / 6, alpha = 0.9) +
       ggplot2::geom_label(aes(color = .data$type, label = .data$variable),
-        fontface = "bold", alpha = 0.9, size = base_size/4
+        fontface = "bold", alpha = 0.9, size = base_size / 4
       ) +
       ggplot2::xlim(c(0, 1)) +
       ggplot2::xlab("Cumulative relative importance") +

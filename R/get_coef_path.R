@@ -39,8 +39,10 @@ get_coef_path <- function(sgb_model) {
   stopifnot("Model must be of class mboost" = class(sgb_model) == "mboost")
   initial_mstop <- mboost::mstop(sgb_model)
   coef_path <- get_coef(sgb_model) %>%
-    lapply(function(x){x %>% mutate(iteration = mboost::mstop(sgb_model))})
-  for(i in (mboost::mstop(sgb_model)-1):1){
+    lapply(function(x) {
+      x %>% mutate(iteration = mboost::mstop(sgb_model))
+    })
+  for (i in (mboost::mstop(sgb_model) - 1):1) {
     coef_path$raw <- coef_path$raw %>%
       dplyr::bind_rows(get_coef(sgb_model[i])$raw %>% mutate(iteration = i))
     coef_path$aggregated <- coef_path$aggregated %>%

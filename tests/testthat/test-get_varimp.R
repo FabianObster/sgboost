@@ -34,7 +34,7 @@ test_that("get_varimp works", {
         "bols(x1, intercept = FALSE, df = 0.3)"
       ),
       predictor = c("x4, x5", "x1"),
-      selfreq = c(0.59,0.41),
+      selfreq = c(0.59, 0.41),
       type = c("group", "individual"),
       relative_importance = c(0.7332, 0.2668)
     ),

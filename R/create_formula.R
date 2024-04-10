@@ -49,9 +49,11 @@ create_formula <- function(alpha = 0.3, group_df = NULL, blearner = "bols",
   stopifnot("Mixing parameter alpha must be numeric" = is.numeric(alpha))
   stopifnot("Mixing parameter alpha must between zero and one" = (alpha >= 0 & alpha <= 1))
   stopifnot("group_df must be a data.frame" = is.data.frame(group_df))
-  stopifnot("group_name and var_name have to be columns of group_df" =
-              (group_name %in% colnames(group_df) &
-    var_name %in% colnames(group_df)))
+  stopifnot(
+    "group_name and var_name have to be columns of group_df" =
+      (group_name %in% colnames(group_df) &
+        var_name %in% colnames(group_df))
+  )
   if (blearner != "bols") {
     warning("passing a baselearner other than bols does not guarantee
             that mboost() returns a sparse-group boosting model")

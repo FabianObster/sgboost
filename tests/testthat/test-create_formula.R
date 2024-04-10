@@ -47,9 +47,9 @@ test_that("create_formula works", {
     y ~ bols(x1, x2, df = 1, intercept = FALSE) + bols(x3, df = 1, intercept = FALSE),
     ignore_formula_env = TRUE
   )
-  colnames(group_df) <- c('group', 'var')
+  colnames(group_df) <- c("group", "var")
   expect_equal(
-    create_formula(alpha = 0, group_df = group_df, group_name = 'group', var_name = 'var'),
+    create_formula(alpha = 0, group_df = group_df, group_name = "group", var_name = "var"),
     y ~ bols(x1, x2, df = 1, intercept = FALSE) + bols(x3, df = 1, intercept = FALSE),
     ignore_formula_env = TRUE
   )
