@@ -60,6 +60,6 @@ group_df <- data.frame(
 )
 
 sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
-sgb_model <- mboost(formula = as.formula(sgb_formula), data = df)
+sgb_model <- mboost(formula = sgb_formula, data = df)
 summary(sgb_model)
 }

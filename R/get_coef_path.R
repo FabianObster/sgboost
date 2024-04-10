@@ -7,8 +7,7 @@
 #' same variable. This function aggregates both and returns it in a dataframe for each boosting iteration
 #'
 #' @param sgb_model `mboost` model to compute the coefficient path for .
-#' @importFrom dplyr filter mutate %>%
-#' @importFrom tibble rownames_to_column tibble
+#' @importFrom dplyr mutate %>%
 #'
 #' @return List of dataframes containing the a dataframe `$raw` with the
 #' variable and the raw (Regression) coefficients and the dataframe `$aggregated` with the

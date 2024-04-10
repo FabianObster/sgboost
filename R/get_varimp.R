@@ -16,8 +16,7 @@
 #' @return List of two dataframes. `$raw` contains the variables, group structure and
 #' variable importance on both group and individual variable basis.
 #' `$group_importance` contains the the aggregated relative importance of all
-#'  group baselearners and of all
-#' individual variables.
+#' group baselearners and of all individual variables.
 #' @export
 #' @seealso [mboost::varimp()] which this function uses.
 #'

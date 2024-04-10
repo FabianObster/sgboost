@@ -21,9 +21,7 @@
 #' @param base_size The `base_size` argument to be passed to the `ggplot2` theme
 #' [ggplot2::theme_bw] to be used to control the overall size of the figure.
 #' Default value is 8.
-#' @importFrom dplyr filter  arrange mutate filter group_by ungroup mutate %>%
-#' @importFrom stringr str_detect
-#' @importFrom mboost varimp
+#' @importFrom dplyr filter  arrange mutate group_by ungroup %>%
 #' @importFrom rlang .data
 #' @import ggplot2
 #'

@@ -23,8 +23,6 @@
 #' [ggplot2::theme_classic] to be used to control the overall size of the figure.
 #' Default value is 8.
 #' @importFrom dplyr filter mutate case_when %>%
-#' @importFrom stringr str_detect str_replace
-#' @importFrom mboost varimp
 #' @importFrom rlang .data
 #' @importFrom ggforce geom_circle
 #' @import ggplot2
@@ -142,7 +140,7 @@ plot_effects <- function(sgb_model, plot_type = "radar", prop = 1, n_predictors 
                           xend = .data$x * 0.13, yend = .data$y * 0.13)) +
       ggplot2::geom_segment(arrow = arrow(length = unit(6, "pt")),
                             aes(color = .data$type)) +
-      ggplot2::theme_classic() +
+      ggplot2::theme_classic(base_size = base_size) +
       ggplot2::theme(legend.title = element_blank()) +
       ggplot2::ylim(c(-max_diam * 1.2, max_diam * 1.2)) +
       xlim(c(-max_diam * 1.2, max_diam * 1.2)) +
@@ -179,7 +177,7 @@ plot_effects <- function(sgb_model, plot_type = "radar", prop = 1, n_predictors 
       dplyr::mutate(variable = substr(.data$variable, 1, max_char_length))
     plot_out <- plotdata %>%
       ggplot2::ggplot(aes(x = .data$cum_importance, y = .data$effect)) +
-      ggplot2::theme_classic() +
+      ggplot2::theme_classic(base_size = base_size) +
       ggplot2::theme(legend.title = element_blank()) +
       ggplot2::geom_curve(aes(
         x = .data$cum_importance, y = 0, xend = .data$cum_importance,

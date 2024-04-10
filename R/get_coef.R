@@ -9,6 +9,7 @@
 #' @param sgb_model `mboost` model to compute the coefficients for.
 #' @importFrom dplyr filter mutate %>%
 #' @importFrom tibble rownames_to_column tibble
+#' @importFrom stringr str_replace str_detect
 #'
 #' @return List of dataframes containing the a dataframe `$raw` with the
 #' variable and the raw (Regression) coefficients and the dataframe `$aggregated` with the

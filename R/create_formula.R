@@ -15,8 +15,7 @@
 #' @param blearner Type of baselearner. Default is `'bols'`.
 #' @param outcome_name Name of dependent variable.
 #' @param intercept Logical, should intercept be used?
-#' @importFrom dplyr filter select group_by summarize mutate %>%
-#' @importFrom stats as.formula
+#' @importFrom dplyr select group_by summarize mutate %>%
 #' @importFrom rlang .data
 #' @return Character containing the formula to be passed to [mboost::mboost()]
 #'  yielding the sparse group boosting for a given value mixing parameter `alpha`.
@@ -41,7 +40,7 @@
 #' )
 #'
 #' sgb_formula <- create_formula(alpha = 0.3, group_df = group_df)
-#' sgb_model <- mboost(formula = as.formula(sgb_formula), data = df)
+#' sgb_model <- mboost(formula = sgb_formula, data = df)
 #' summary(sgb_model)
 create_formula <- function(alpha = 0.05, group_df = NULL, blearner = "bols",
                            outcome_name = "y", group_name = "group_name",

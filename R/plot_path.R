@@ -14,7 +14,6 @@
 #' @importFrom dplyr filter mutate case_when %>%
 #' @importFrom mboost mstop
 #' @importFrom rlang .data
-#' @importFrom ggforce geom_circle
 #' @import ggplot2
 #'
 #' @returns `ggplot2` object mapping the effect sizes and variable importance.
