@@ -119,11 +119,11 @@ plot_effects <- function(sgb_model, plot_type = "radar", prop = 0, n_predictors 
         arrow = arrow(length = unit(6, "pt")), angle = 0, color = "grey"
       ) +
       ggplot2::geom_label(aes(color = .data$type, label = .data$variable),
-        fontface = "bold", alpha = 0.9
+        fontface = "bold", alpha = 0.9, size = base_size/4
       ) +
       ggplot2::geom_label(aes(x = .data$x / 2, y = .data$y / 2,
-                              label = round(.data$effect, 2)), size = 2, alpha = 0.9) +
-      ggplot2::geom_label(aes(x = 0, y = 0, label = "y"), alpha = 0.5) +
+                              label = round(.data$effect, 2)), size = base_size/6, alpha = 0.9) +
+      ggplot2::geom_label(aes(x = 0, y = 0, label = "y"), alpha = 0.5, size = base_size/2) +
       ggplot2::xlab("") +
       ggplot2::ylab("")
   } else if (plot_type == "clock") {
@@ -165,11 +165,11 @@ plot_effects <- function(sgb_model, plot_type = "radar", prop = 0, n_predictors 
         arrow = arrow(length = unit(6, "pt")), angle = 0, color = "grey"
       ) +
       ggplot2::geom_label(aes(color = .data$type, label = .data$variable),
-        fontface = "bold", alpha = 0.9
+        fontface = "bold", alpha = 0.9, size = base_size/4
       ) +
       ggplot2::geom_label(aes(x = .data$x / 2, y = .data$y / 2,
-                              label = round(.data$effect, 2)), size = 2, alpha = 0.9) +
-      ggplot2::geom_label(aes(x = 0, y = 0, label = "y"), alpha = 0.5) +
+                              label = round(.data$effect, 2)), size = base_size/6, alpha = 0.9) +
+      ggplot2::geom_label(aes(x = 0, y = 0, label = "y"), alpha = 0.5, size = base_size/2) +
       ggplot2::xlab("") +
       ggplot2::ylab("")
   } else if (plot_type == "scatter") {
@@ -184,9 +184,9 @@ plot_effects <- function(sgb_model, plot_type = "radar", prop = 0, n_predictors 
         yend = .data$effect, color = .data$type
       ), angle = 0) +
       ggplot2::geom_label(aes(x = .data$cum_importance, y = .data$effect / 2,
-                              label = round(.data$effect, 2)), size = 2, alpha = 0.9) +
+                              label = round(.data$effect, 2)), size = base_size/6, alpha = 0.9) +
       ggplot2::geom_label(aes(color = .data$type, label = .data$variable),
-        fontface = "bold", alpha = 0.9
+        fontface = "bold", alpha = 0.9, size = base_size/4
       ) +
       ggplot2::xlim(c(0, 1)) +
       ggplot2::xlab("Cumulative relative importance") +

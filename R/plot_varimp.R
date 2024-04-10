@@ -23,6 +23,7 @@
 #' Default value is 8.
 #' @importFrom dplyr filter  arrange mutate group_by ungroup order_by %>%
 #' @importFrom rlang .data
+#' @importFrom stats reorder
 #' @import ggplot2
 #'
 #' @return object of type `ggplot2`.
@@ -73,7 +74,8 @@ plot_varimp <- function(sgb_model, prop = 0, n_predictors = 30, max_char_length 
     dplyr::ungroup() %>%
     dplyr::mutate(
       type_label = paste0(.data$type, " (", round(.data$total_importance, 2), ")"),
-      predictor = substr(.data$predictor, 1, max_char_length)
+      predictor = substr(.data$predictor, 1, max_char_length),
+      predictor = stats::reorder(.data$predictor, .data$relative_importance)
     )
   if (sum(nchar(sgb_varimp$varimp$predictor) > max_char_length)) {
     message("The number characters of some predictors were reduced.
@@ -87,7 +89,7 @@ plot_varimp <- function(sgb_model, prop = 0, n_predictors = 30, max_char_length 
   }
   plot_out <- plotdata %>%
     ggplot2::ggplot(aes(
-      x = stats::reorder(.data$relative_importance, .data$predictor),
+      x = .data$predictor,
       fill = .data$type_label, y = .data$relative_importance
     )) +
     ggplot2::geom_col() +

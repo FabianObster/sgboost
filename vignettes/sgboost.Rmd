@@ -46,7 +46,7 @@ remotes::install_github(
 ```
 
 ```{r, warning=FALSE, message=FALSE}
-eval <- FALSE
+eval <- TRUE
 library(mboost)
 library(sgboost)
 library(dplyr)
@@ -179,6 +179,8 @@ sgb_model_binary <- mboost(formula = sgb_formula_binary, data = df, family = Bin
 # mstop(cv_sgb_model_binary)
 # plot(cv_sgb_model_linear)
 # plot(cv_sgb_model_binary)
+sgb_model_linear <- sgb_model_linear[320]
+sgb_model_binary <- sgb_model_binary[540]
 ```
 In this example the lowest out-of-sample risk is obtained at 320 (linear) and 
 540 (logistic) boosting iterations.
@@ -194,7 +196,7 @@ on the boosting iteration
 
 A good starting point for understanding a sparse-group boosting model is the 
 variable importance. In the context of boosting the variable importance can be 
-defined as the relative contriubtion of each predictor to the overall reduction
+defined as the relative contriubution of each predictor to the overall reduction
 of the loss function (negative log likelihood).
 `get_varimp` returns the variable importance of each baselearner/predictor 
 selected in throughout the boosting process. Note that in the case of the selection
@@ -215,8 +217,8 @@ in this case the relative importance of groups in the legend is based only on th
 plotted variables and not the ones removed.
 
 ```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
-get_varimp(sgb_model = sgb_model_binary)
-plot_varimp(sgb_model = sgb_model_binary, n_predictors = 10) 
+get_varimp(sgb_model = sgb_model_linear)
+plot_varimp(sgb_model = sgb_model_linear, n_predictors = 15) 
 ```
 
 ### Resulting model coefficients
@@ -236,7 +238,7 @@ get_coef(sgb_model = sgb_model_linear)$raw %>% slice(1:10)
 
 With `plot_effects` we can plot the effect sizes of the sparse-group boosting model 
 in relation to the relative importance to get an overall picture of the model. 
-Throug the parameter `'plot_type'` one can choose the type of visualization.
+Through the parameter `'plot_type'` one can choose the type of visualization.
 `'radar'` refers to a radar plot using polar coordinates.
 Here the angle is relative to the cumulative relative importance of predictors and
 the radius is proportional to the effect size. `'clock'` does the same as `'radar'` 
@@ -244,9 +246,9 @@ but uses clock coordinates instead of polar coordinates. `'scatter'` uses the
 effect size as y-coordinate and the cumulative relative importance as x-axis in 
 a classical Scatter plot.
 ```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
-plot_effects(sgb_model = sgb_model_binary, n_predictors = 10) 
-plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = 'clock') 
-plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = 'scatter')
+plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, base_size = 10) 
+plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = 'clock', base_size = 10) 
+plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = 'scatter', base_size = 10)
 ```
 
 ### Coefficient path
@@ -257,8 +259,6 @@ coefficient was updated by an individual variable or group.
 ```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
 plot_path(sgb_model = sgb_model_linear[100])
 plot_path(sgb_model = sgb_model_binary[100])
-sgb_model_linear <- sgb_model_linear[320]
-sgb_model_binary <- sgb_model_binary[540]
 ```
 
 
