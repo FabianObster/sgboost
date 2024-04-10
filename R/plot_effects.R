@@ -27,7 +27,7 @@
 #' @importFrom ggforce geom_circle
 #' @import ggplot2
 #'
-#' @returns `ggplot2` object mapping the effect sizes and variable importance.
+#' @return `ggplot2` object mapping the effect sizes and variable importance.
 #' @seealso [sgboost::get_coef()], [sgboost::get_varimp()] which this function uses.
 #' @export
 #'

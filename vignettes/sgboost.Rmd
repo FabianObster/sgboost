@@ -1,8 +1,8 @@
 ---
-title: "A Sparse-group boosing Tutorial in R"
+title: "A sparse-group boosing Tutorial in R"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{sparse-group boosing in R}
+  %\VignetteIndexEntry{A sparse-group boosing Tutorial in R}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8} 
 ---
@@ -44,7 +44,6 @@ remotes::install_github(
 ```
 
 ```{r, warning=FALSE, message=FALSE}
-eval <- TRUE
 library(mboost)
 library(sgboost)
 library(dplyr)
@@ -59,9 +58,7 @@ We use the same simulated data and model structure as in the vignette of `sparse
 where the coefficient vector $\beta^*$ is specified as below, and the white noise
 $\epsilon$ follows a standard normal distribution. 
 
-```{r, warning=FALSE,message=FALSE, eval=eval}
-# library(sgboost)
-# 10; 305, 588
+```{r, warning=FALSE,message=FALSE, eval=TRUE}
 set.seed(10)
 n <- 100
 p <- 200
@@ -146,7 +143,7 @@ not centered, one should include use `intercept = TRUE`. Note that in this case,
 individual baselearners will be groups of size two, and the group size of group
 baselearners increases by one. 
 
-```{r, eval=eval}
+```{r, eval=TRUE}
 sgb_formula_linear <- create_formula(
   alpha = 0.4, group_df = group_df, outcome_name = "y", intercept = FALSE,
   group_name = "group_name", var_name = "variable_name",
@@ -164,7 +161,7 @@ The main hyperparameters are `nu`and `mstop`. For model tuning, the `mboost` fun
 `cvrisk` can be used and plotted. `cvrisk` may be slow to run. One can run it in
 parallel to speed up.
 
-```{r, eval=eval}
+```{r, eval=TRUE}
 sgb_model_linear <- mboost(
   formula = sgb_formula_linear, data = df,
   control = boost_control(nu = 1, mstop = 600)
@@ -222,7 +219,7 @@ plotted variables and not the ones removed. To add information about the directi
 of effect sizes, one could add arrows behind the bars[^3]. To do this for the
 groups, one can use the aggregated coefficients from `get_coef`.
 
-```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
+```{r, eval=TRUE, fig.align='center', fig.height=5, fig.width=7}
 get_varimp(sgb_model = sgb_model_linear)$varimp %>% slice(1:10)
 get_varimp(sgb_model = sgb_model_linear)$group_importance
 plot_varimp(sgb_model = sgb_model_linear, n_predictors = 15)
@@ -236,7 +233,7 @@ individual variable or as a group. Therefore, there can be two associated effect
 for the same variable. This function aggregates both and returns them in a data.frame
 sorted by the effect size `'effect'`.
 
-```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
+```{r, eval=TRUE, fig.align='center', fig.height=5, fig.width=7}
 get_coef(sgb_model = sgb_model_linear)$aggregate %>% slice(1:10)
 get_coef(sgb_model = sgb_model_linear)$raw %>% slice(1:10)
 ```
@@ -252,7 +249,7 @@ the radius is proportional to the effect size. `'clock'` does the same as `'rada
 but uses clock coordinates instead of polar coordinates. `'scatter'` uses the
 effect size as y-coordinate and the cumulative relative importance as x-axis in 
 a classical Scatter plot.
-```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
+```{r, eval=TRUE, fig.align='center', fig.height=5, fig.width=7}
 plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, base_size = 10)
 plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = "clock", base_size = 10)
 plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = "scatter", base_size = 10)
@@ -263,12 +260,12 @@ plot_effects(sgb_model = sgb_model_binary, n_predictors = 10, plot_type = "scatt
 `plot_path` calls `get_coef_path` to retrieve the aggregated coefficients from a
 `mboost` object for each boosting iteration and plots it, while indicating if a
 coefficient was updated by an individual variable or group.
-```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
+```{r, eval=TRUE, fig.align='center', fig.height=5, fig.width=7}
 plot_path(sgb_model = sgb_model_linear[100])
 plot_path(sgb_model = sgb_model_binary[100])
 ```
 
 [^1]: Obster F & Heumann C, (2024). _Sparse-group boosting -- Unbiased group and variable selection._
 <https://doi.org/10.48550/arXiv.2206.06344>
-[^2]: McDonald D, Liang X, Heinsfeld A, Cohen A, Yang Y, Zou H, Friedman J, Hastie T, Tibshirani R, Narasimhan B, Tay K, Simon N, Qian J  & Yang J. (2022).  _Getting started with sparsegl._ <https://cran.r-project.org/web/packages/sparsegl/vignettes/sparsegl.html>.
+[^2]: McDonald D, Liang X, Heinsfeld A, Cohen A, Yang Y, Zou H, Friedman J, Hastie T, Tibshirani R, Narasimhan B, Tay K, Simon N, Qian J  & Yang J. (2022).  _Getting started with sparsegl._ <https://CRAN.R-project.org/package=sparsegl>.
 [^3]: Obster F., Bohle H. & Pechan P.M. (2024). _The financial well-being of fruit farmers in Chile and Tunisia depends more on social and geographical factors than on climate change._ Commun Earth Environ 5, 16. <https://doi.org/10.1038/s43247-023-01128-2>.
