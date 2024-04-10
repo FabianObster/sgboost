@@ -5,11 +5,11 @@
 
 # R-package `sgboost`
 
-Implements the sparse group boosting in conjunction with the R-package
-`mboost`. A formula object defining group baselearners and individual
-baselearners is being used in the fitting process. Regularization is
-based on the degrees of freedom of an individual baselearners
-$df(\lambda)$ and the ones of a group baselearners $df(\lambda^{(g)})$,
+Implements the sparse-group boosting in to be used conjunction with the
+R-package `mboost`. A formula object defining group base learners and
+individual base learners is used in the fitting process.. Regularization
+is based on the degrees of freedom of individual baselearners
+$df(\lambda)$ and the ones of group baselearners $df(\lambda^{(g)})$,
 such that $df(\lambda) = \alpha$ and $df(\lambda^{(g)}) = 1- \alpha$.
 
 ## Installation
@@ -32,8 +32,8 @@ library(dplyr)
 library(mboost)
 ```
 
-For a dataframe `df` and a group structure `group_df`, this example fits
-a sparse-group boosting model and plots the coefficient path:
+For a data.frame `df` and a group structure `group_df`, this example
+fits a sparse-group boosting model and plots the coefficient path:
 
 ``` r
 library(sgboost)

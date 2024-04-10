@@ -1,8 +1,8 @@
 ---
-title: "Sparse group boosing in R: Tutorial"
+title: "A Sparse-group boosing Tutorial in R"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Sparse group boosing in R}
+  %\VignetteIndexEntry{sparse-group boosing in R}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8} 
 ---
@@ -16,14 +16,12 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-`sgboost` Implements the sparse group boosting in conjunction with the R-package `mboost`.
-A formula object defining group baselearners and individual
-baselearners is being used in the fitting process. Regularization is
-based on the degrees of freedom of an individual baselearners
-$df(\lambda)$ and the ones of a group baselearners $df(\lambda^{(g)})$,
+`sgboost` is an implementation of the sparse-group boosting [^1] in conjunction with the R-package `mboost`.
+In the fitting process, a formula object defining group base learners and individual base learners is utilized.
+Regularization is based on the degrees of freedom of an individual baselearners
+$df(\lambda)$ and group baselearners $df(\lambda^{(g)})$,
 such that $df(\lambda) = \alpha$ and $df(\lambda^{(g)}) = 1- \alpha$. 
-Sparse group boosting is an alternative method to the sparse group lasso based
-on boosted Ridge regression. 
+Sparse-group boosting serves as an alternative method to sparse-group lasso, employing boosted Ridge regression.
 
 
 # Installation
@@ -53,7 +51,7 @@ library(dplyr)
 library(ggplot2)
 ```
 # Data setup
-We use the same simulated data and model structure as in the vignette of `sparsegl` (McDonald, Liang , Heinsfeld, 2023).[^1].  Randomly generate a $n\times p$ design matrix `X`. For the real-valued vector `y` the following two settings are being used:
+We use the same simulated data and model structure as in the vignette of `sparsegl` (McDonald, Liang , Heinsfeld, 2023)[^2].  Randomly generate a $n\times p$ design matrix `X`.Randomly generate an $n \times p$ design matrix X. For the real-valued vector y, the following two settings are being used:
 
 * Linear Regression model: $y = X\beta^* + \epsilon$.
 * Logistic regression model: $y = (y_1, y_2, \cdots, y_n)$, where $y_i \sim \text{Bernoulli}\left(\frac{1}{1 + \exp(-x_i^\top \beta^*)}\right)$, $i = 1, 2, \cdots, n,$
@@ -93,17 +91,17 @@ group_df <- data.frame(
   )
 ```
 # Optimization Problem
-The sparse group-boosting problem is formulated as the sum of mean squared error (linear regression) or logistic loss (logistic regression) within each boosting iteration:
+The sparse-group-boosting problem is formulated as the sum of mean squared error (linear regression) or logistic loss (logistic regression) within each boosting iteration:
 
 * Linear regression: 
-    + Group baselearner: \newline $$\min_{g \leq G}\min_{\beta^{(g)} \in \mathbb{R}^p}\left(\frac{1}{2n} \rVert u - X^{(g)}\beta^{(g)}\rVert_2^2 + \lambda^{(g)} \rVert\beta^{(g)}\rVert_2 \right)$$
-    + Individual baselearner: \newline  $$\min_{g \leq G, j \leq p_g}\min_{\beta^{(g)}_j\in\mathbb{R}}\left(\frac{1}{2n} \rVert u - X^{(g)}_j\beta^{(g)}_j\rVert_2^2 + \lambda^{(g)}_j \rVert\beta^{(g)}_j\rVert_2 \right)$$
+    + Group baselearner: \newline $$\min_{g \leq G}\min_{\beta^{(g)} \in \mathbb{R}^p}\left(\frac{1}{2n} \rVert u - X^{(g)}\beta^{(g)}\rVert_2^2 + \lambda^{(g)} \rVert\beta^{(g)}\rVert_2^2 \right)$$
+    + Individual baselearner: \newline  $$\min_{g \leq G, j \leq p_g}\min_{\beta^{(g)}_j\in\mathbb{R}}\left(\frac{1}{2n} \rVert u - X^{(g)}_j\beta^{(g)}_j\rVert_2^2 + \lambda^{(g)}_j \rVert\beta^{(g)}_j\rVert_2^2 \right)$$
 
 * Logistic regression: 
     + Group baselearner \newline
-$$\min_{g \in G}\min_{\beta^{(g)}\in\mathbb{R}}\left(\frac{1}{2n}\sum_{i=1}^n \log\left(1 + \exp\left(-y_i(x^{(g)})_i^\top\beta^{(g)}\right)\right) + \lambda^{(g)} \rVert\beta^{(g)}\rVert_2 \right) \qquad$$
+$$\min_{g \in G}\min_{\beta^{(g)}\in\mathbb{R}}\left(\frac{1}{2n}\sum_{i=1}^n \log\left(1 + \exp\left(-y_i(x^{(g)})_i^\top\beta^{(g)}\right)\right) + \lambda^{(g)} \rVert\beta^{(g)}\rVert_2^2 \right) \qquad$$
     + Individual baselearners
-$$\min_{g \in G, j \in p_g}\min_{\beta^{(g)}_j\in\mathbb{R}}\left(\frac{1}{2n}\sum_{i=1}^n \log\left(1 + \exp\left(-y_i(x^{(g)_j})_i^\top\beta^{(g)}_j\right)\right) + \lambda^{(g)}_j \rVert\beta^{(g)}_j\rVert_2 \right) \qquad$$
+$$\min_{g \in G, j \in p_g}\min_{\beta^{(g)}_j\in\mathbb{R}}\left(\frac{1}{2n}\sum_{i=1}^n \log\left(1 + \exp\left(-y_i(x^{(g)})_{ij}^\top\beta^{(g)}_j\right)\right) + \lambda^{(g)}_j \rVert\beta^{(g)}_j\rVert_2^2 \right) \qquad$$
 where 
 * $df(\lambda^{(g)}_j) = \alpha$
 * $df(\lambda^{g}) = 1-\alpha$
@@ -120,17 +118,17 @@ the features in group $g$.
 * $\alpha$ adjusts the weight between group and individual baselearners.
 
 * $\lambda^{(g)}, \lambda^{(g)}_j$ Ridge penalty parameters.
-* $u$ is the negative gradient vector form the previous boosting iteration.
+* $u$ is the negative gradient vector from the previous boosting iteration.
 
 # Workflow
 
-To estimate, tune and interpret a sparse-group boosting model the following 
-workflow is advised
+To estimate, tune and interpret a sparse-group boosting model, the following 
+workflow is advised:
 
 ## Define model
 
-We start by creating the formula that describes the sparse group boosting 
-optimization problem as stated above. We pass three central parameters to `create_formula`.
+We start by creating the formula that describes the sparse-group boosting 
+optimization problem, as stated above. We pass three central parameters to `create_formula`.
 
 * `alpha`: Mixing parameter between zero and one used for the convex combination 
 of the degrees of freedom.
@@ -142,8 +140,8 @@ on the modelling data.frame have to be in group_df. These could be ID, timestamp
 additional information one does not want to use in the model. 
 * `outcome_name`: Name of the outcome variable in the modelling data.frame
 * `intercept`: Should an intercept be used for all baselearners? If the data is
-not centered, one should include use `intercept = TRUE`. Note that in this case
-individual baselearners will be groups of size two and the group size of group
+not centered, one should include use `intercept = TRUE`. Note that in this case,
+individual baselearners will be groups of size two, and the group size of group
 baselearners increases by one. 
 
 ```{r, eval=eval}
@@ -159,9 +157,9 @@ sgb_formula_binary <- create_formula(
 
 ## Model fitting and tuning
 
-pass the formula to `mboost` and use the aruments as seems appropriate. 
-The main hyperparameters are `nu`and `mstop`. For model tuning the `mboost` function
-`cvrisk` can be used und plotted. `cvrisk` may be slow to run. One can run it in
+Pass the formula to `mboost` and use the arguments as seems appropriate. 
+The main hyperparameters are `nu`and `mstop`. For model tuning, the `mboost` function
+`cvrisk` can be used and plotted. `cvrisk` may be slow to run. One can run it in
 parallel to speed up.
 
 ```{r, eval=eval}
@@ -182,7 +180,7 @@ sgb_model_binary <- mboost(formula = sgb_formula_binary, data = df, family = Bin
 sgb_model_linear <- sgb_model_linear[320]
 sgb_model_binary <- sgb_model_binary[540]
 ```
-In this example the lowest out-of-sample risk is obtained at 320 (linear) and 
+In this example, the lowest out-of-sample risk is obtained at 320 (linear) and 
 540 (logistic) boosting iterations.
 
 ## Interpreting and plotting a sparse-group boosting model
@@ -196,7 +194,7 @@ on the boosting iteration
 
 A good starting point for understanding a sparse-group boosting model is the 
 variable importance. In the context of boosting the variable importance can be 
-defined as the relative contriubution of each predictor to the overall reduction
+defined as the relative contribution of each predictor to the overall reduction
 of the loss function (negative log likelihood).
 `get_varimp` returns the variable importance of each baselearner/predictor 
 selected in throughout the boosting process. Note that in the case of the selection
@@ -213,20 +211,23 @@ one can visualize the variable importance as a barplot. One can indicate the max
 number of predictors to be printed through `n_predictors` or the minimal 
 variable importance that a predictor has to have though `prop`. Through both 
 parameters the number of printed entries can be reduced. Note that
-in this case the relative importance of groups in the legend is based only on the
-plotted variables and not the ones removed.
+in this case, the relative importance of groups in the legend is based only on the
+plotted variables and not the ones removed. To add information about the direction
+of effect sizes, one could add arrows behind the bars[^3]. To do this for the
+groups, one can use the aggregated coefficients from `get_coef`.
 
 ```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
-get_varimp(sgb_model = sgb_model_linear)
+get_varimp(sgb_model = sgb_model_linear)$varimp %>% slice(1:10)
+get_varimp(sgb_model = sgb_model_linear)$group_importance
 plot_varimp(sgb_model = sgb_model_linear, n_predictors = 15) 
 ```
 
 ### Resulting model coefficients
 
 The resulting coefficients can be retrieved through `get_coef`. 
-In a sparse group boosting models a variable in a dataset can be selected as an
-individual variable or as a group. Therefore there can be two associated effect sizes
-for the same variable. This function aggregates both and returns it in a data.frame
+In a sparse-group boosting models, a variable in a dataset can be selected as an
+individual variable or as a group. Therefore, there can be two associated effect sizes
+for the same variable. This function aggregates both and returns them in a data.frame
 sorted by the effect size `'effect'`.
 
 ```{r, eval=eval, fig.align='center', fig.height=5, fig.width=7}
@@ -261,5 +262,7 @@ plot_path(sgb_model = sgb_model_linear[100])
 plot_path(sgb_model = sgb_model_binary[100])
 ```
 
-
-[^1]: McDonald D, Liang X, Heinsfeld A, Cohen A, Yang Y, Zou H, Friedman J, Hastie T, Tibshirani R, Narasimhan B, Tay K, Simon N, Qian J, Yang J. (2022).  _Getting started with sparsegl._ <https://cran.r-project.org/web/packages/sparsegl/vignettes/sparsegl.html>.
+[^1]: Obster F & Heumann C, (2024). _Sparse-group boosting -- Unbiased group and variable selection._
+<https://doi.org/10.48550/arXiv.2206.06344>
+[^2]: McDonald D, Liang X, Heinsfeld A, Cohen A, Yang Y, Zou H, Friedman J, Hastie T, Tibshirani R, Narasimhan B, Tay K, Simon N, Qian J  & Yang J. (2022).  _Getting started with sparsegl._ <https://cran.r-project.org/web/packages/sparsegl/vignettes/sparsegl.html>.
+[^3]: Obster F., Bohle H. & Pechan P.M. (2024). _The financial well-being of fruit farmers in Chile and Tunisia depends more on social and geographical factors than on climate change._ Commun Earth Environ 5, 16. <https://doi.org/10.1038/s43247-023-01128-2>.

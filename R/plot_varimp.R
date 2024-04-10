@@ -89,7 +89,7 @@ plot_varimp <- function(sgb_model, prop = 0, n_predictors = 30, max_char_length 
   }
   plot_out <- plotdata %>%
     ggplot2::ggplot(aes(
-      x = dplyr::order_by(.data$predictor,as.numeric(.data$relative_importance)),
+      x = .data$predictor,
       fill = .data$type_label, y = .data$relative_importance
     )) +
     ggplot2::geom_col() +
