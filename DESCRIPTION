@@ -1,6 +1,6 @@
 Package: sgboost
 Title: Sparse-Group Boosting
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: 
     person("Fabian", "Obster", , "fabian.obster@unibw.de", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "https://orcid.org/0000-0002-6951-9869"))
