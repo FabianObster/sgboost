@@ -5,7 +5,7 @@
 \title{Create a sparse-group boosting formula}
 \usage{
 create_formula(
-  alpha = 0.05,
+  alpha = 0.3,
   group_df = NULL,
   blearner = "bols",
   outcome_name = "y",
@@ -18,28 +18,29 @@ create_formula(
 \item{alpha}{Numeric mixing parameter. For alpha = 0 only group baselearners and for
 alpha = 1 only individual baselearners are defined.}
 
-\item{group_df}{Dataframe containing variable names with group structure.}
+\item{group_df}{input data.frame containing variable names with group structure.}
 
 \item{blearner}{Type of baselearner. Default is \code{'bols'}.}
 
-\item{outcome_name}{Name of dependent variable.}
+\item{outcome_name}{String indicating the name of dependent variable. Default is \code{"y"}}
 
-\item{group_name}{Name of column in group_df indicating the group structure of the variables.}
+\item{group_name}{Name of column in group_df indicating the group structure of the variables.
+Default is \verb{"group_name}.}
 
 \item{var_name}{Name of column in group_df containing the variable names
-to be used as predictors.}
+to be used as predictors. Default is \code{"var_name"}}
 
 \item{intercept}{Logical, should intercept be used?}
 }
 \value{
 Character containing the formula to be passed to \code{\link[mboost:gamboost]{mboost::mboost()}}
-yielding the sparse group boosting for a given value mixing parameter \code{alpha}.
+yielding the sparse-group boosting for a given value mixing parameter \code{alpha}.
 }
 \description{
-Creates a \code{mboost} formula that allows to fit a sparse group boosting model based on
+Creates a \code{mboost} formula that allows to fit a sparse-group boosting model based on
 boosted Ridge Regression with mixing parameter \code{alpha}. The formula consists of a
 group baselearner part with degrees of freedom
-1-alpha and individual baselearners with degrees of freedom \code{alpha}.
+1-\code{alpha} and individual baselearners with degrees of freedom \code{alpha}.
 }
 \examples{
 library(mboost)

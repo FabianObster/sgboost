@@ -2,24 +2,24 @@
 % Please edit documentation in R/get_varimp.R
 \name{get_varimp}
 \alias{get_varimp}
-\title{Variable importance of a sparse group boosting model}
+\title{Variable importance of a sparse-group boosting model}
 \usage{
 get_varimp(sgb_model)
 }
 \arguments{
-\item{sgb_model}{\code{mboost} model to compute the variable importance for.}
+\item{sgb_model}{Model of type \code{mboost} to compute the variable importance for.}
 }
 \value{
-List of two dataframes. \verb{$raw} contains the variables, group structure and
+List of two data.frames. \verb{$raw} contains the name of the variables, group structure and
 variable importance on both group and individual variable basis.
 \verb{$group_importance} contains the the aggregated relative importance of all
 group baselearners and of all individual variables.
 }
 \description{
-Variable importance is comuted as relative reduction of loss-function attributed
+Variable importance is computed as relative reduction of loss-function attributed
 to each predictor (groups and individual variables).
-Returns a list of two dataframes. The first contains the variable importance
-of a sparse-group model in a dataframe for each predictor.
+Returns a list of two data.frames. The first contains the variable importance
+of a sparse-group model in a data.frame for each predictor.
 The second one contains the aggregated relative importance of all groups vs. individual variables.
 }
 \examples{

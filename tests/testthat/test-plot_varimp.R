@@ -22,6 +22,6 @@ test_that("plot_varimp works", {
   sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df, intercept = T))
   sgb_model <- mboost(formula = sgb_formula, data = df)
   expect_error(plot_varimp(sgb_model = sgb_model, prop = 1.2), "prop must be between zero and one")
-  expect_message(plot_varimp(sgb_model = sgb_model, prop = 0.01))
+  expect_message(plot_varimp(sgb_model = sgb_model, prop = 0.2))
   expect_message(plot_varimp(sgb_model = sgb_model, n_predictors = 1), "1 predictors were removed. Use prop or n_predictors to change")
 })

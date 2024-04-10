@@ -7,20 +7,21 @@
 get_coef(sgb_model)
 }
 \arguments{
-\item{sgb_model}{\code{mboost} model to compute the coefficients for.}
+\item{sgb_model}{Model of type \code{mboost} to compute the coefficients for.}
 }
 \value{
-List of dataframes containing the a dataframe \verb{$raw} with the
-variable and the raw (Regression) coefficients and the dataframe \verb{$aggregated} with the
+List of data.frames containing the a data.frame \code{'$raw'} with the
+variable and the raw (Regression) coefficients and the data.frame \code{'$aggregated'} with the
 aggregated (Regression) coefficients.
 }
 \description{
 Computes the aggregated coefficients from group and individual baselearners.
+Also returns the raw coefficients associated with each baselearner.
 }
 \details{
 in a sparse group boosting models a variable in a dataset can be selected
 as an individual variable or as a group. Therefore there can be two associated effect sizes for the
-same variable. This function aggregates both and returns it in a dataframe.
+same variable. This function aggregates both and returns it in a data.frame.
 }
 \examples{
 library(mboost)

@@ -8,15 +8,15 @@
 #' @param plot_type String indicating the type of visualization to use.
 #' `'radar'` refers to a radar plot using polar coordinates.
 #' Here the angle is relative to the cumulative relative importance of predictors and
-#' the radius is proportional to the effect size. `'clock'` does the same as `'radar'` but uses clock coordinates
-#' instead of polar coordinates. `'scatter'` uses the effect size as y-coordinate and the cumulative relative
+#' the radius is proportional to the effect size. `"clock"` does the same as `"radar"` but uses clock coordinates
+#' instead of polar coordinates. `"scatter"` uses the effect size as y-coordinate and the cumulative relative
 #' importance as x-axis in a classical Scatter plot.
-#' @param prop Numeric value indicating the maximum proportion of explained importance. Default value is one,
-#' meaning all predictors are plotted. By setting prop smaller than one the number of
-#' plotted variables can be reduced. One can also use `'n_predictors'` for limiting
+#' @param prop Numeric value indicating the minimal importance a predictor/baselearner has to have to be plotted.
+#' Default value is zero, meaning all predictors are plotted. By increasing prop the number of
+#' plotted variables can be reduced. One can also use `n_predictors` for limiting
 #' the number of variables to be plotted directly.
 #' @param n_predictors The maximum number of predictors to be plotted. Default is 30.
-#' Alternative to `'prop'`.
+#' Alternative to `prop`.
 #' @param max_char_length The maximum character length of a predictor to be printed.
 #' Default is 5. For long variable names one may adjust this number.
 #' @param base_size The `base_size` argument to be passed to the `ggplot2` theme
@@ -52,11 +52,11 @@
 #' sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
 #' plot_effects(sgb_model)
-plot_effects <- function(sgb_model, plot_type = "radar", prop = 1, n_predictors = 30,
+plot_effects <- function(sgb_model, plot_type = "radar", prop = 0, n_predictors = 30,
                          max_char_length = 5, base_size = 8) {
   stopifnot("Model must be of class mboost" = class(sgb_model) == "mboost")
   stopifnot("prop must be numberic" = is.numeric(prop))
-  stopifnot("prop must be between zero and one" = prop <= 1 & prop > 0)
+  stopifnot("prop must be between zero and one" = prop <= 1 & prop >= 0)
   stopifnot("n_predictors must be a positive number" =
               is.numeric(n_predictors) & n_predictors > 0)
   stopifnot(
@@ -66,7 +66,7 @@ plot_effects <- function(sgb_model, plot_type = "radar", prop = 1, n_predictors 
   sgb_varimp <- get_varimp(sgb_model)$varimp %>%
     dplyr::arrange(-.data$relative_importance) %>%
     dplyr::mutate(cum_importance = cumsum(.data$relative_importance)) %>%
-    dplyr::filter(.data$relative_importance <= prop) %>%
+    dplyr::filter(.data$relative_importance >= prop) %>%
     dplyr::slice(1:n_predictors) %>%
     dplyr::mutate(predictor = dplyr::case_when(.data$predictor == "(Intercept)" ~ "I",
                                                T ~ .data$predictor))
