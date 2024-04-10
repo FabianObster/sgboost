@@ -6,17 +6,17 @@
 \usage{
 plot_varimp(
   sgb_model,
-  prop = 1,
+  prop = 0,
   n_predictors = 30,
   max_char_length = 15,
   base_size = 8
 )
 }
 \arguments{
-\item{sgb_model}{\code{mboost} model to plot the variable importance for.}
+\item{sgb_model}{Model of type \code{mboost} to plot the variable importance.}
 
-\item{prop}{Numeric value indicating the maximum proportion of explained importance. Default value is one,
-meaning all predictors are plotted. By setting prop smaller than one the number of
+\item{prop}{Numeric value indicating the minimal importance a predictor/baselearner has to have.
+Default value is zero, meaning all predictors are plotted. By increasing prop the number of
 plotted variables can be reduced. One can also use \code{'n_predictors'} for limiting
 the number of variables to be plotted directly.}
 

@@ -2,25 +2,25 @@
 % Please edit documentation in R/get_coef_path.R
 \name{get_coef_path}
 \alias{get_coef_path}
-\title{Path of aggregated and raw coefficients in a sparse group boosting model}
+\title{Path of aggregated and raw coefficients in a sparse-group boosting model}
 \usage{
 get_coef_path(sgb_model)
 }
 \arguments{
-\item{sgb_model}{\code{mboost} model to compute the coefficient path for .}
+\item{sgb_model}{Model of type \code{mboost} to compute the coefficient path for .}
 }
 \value{
-List of dataframes containing the a dataframe \verb{$raw} with the
-variable and the raw (Regression) coefficients and the dataframe \verb{$aggregated} with the
+List of data.frames containing the a data.frame \verb{$raw} with the
+variable and the raw (Regression) coefficients and the data.frame \verb{$aggregated} with the
 aggregated (Regression) coefficients.
 }
 \description{
 Computes the aggregated coefficients from group and individual baselearners for each boosting iteration.
 }
 \details{
-in a sparse group boosting models a variable in a dataset can be selected
+in a sparse-group boosting models a variable in a dataset can be selected
 as an individual variable or as a group. Therefore there can be two associated effect sizes for the
-same variable. This function aggregates both and returns it in a dataframe for each boosting iteration
+same variable. This function aggregates both and returns it in a data.frame for each boosting iteration
 }
 \examples{
 library(mboost)

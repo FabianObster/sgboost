@@ -2,34 +2,34 @@
 % Please edit documentation in R/plot_effects.R
 \name{plot_effects}
 \alias{plot_effects}
-\title{Visualizing a sparse group boosting model}
+\title{Visualizing a sparse-group boosting model}
 \usage{
 plot_effects(
   sgb_model,
   plot_type = "radar",
-  prop = 1,
+  prop = 0,
   n_predictors = 30,
   max_char_length = 5,
   base_size = 8
 )
 }
 \arguments{
-\item{sgb_model}{\code{mboost} model to be used.}
+\item{sgb_model}{Model of type \code{mboost} to be used.}
 
 \item{plot_type}{String indicating the type of visualization to use.
 \code{'radar'} refers to a radar plot using polar coordinates.
 Here the angle is relative to the cumulative relative importance of predictors and
-the radius is proportional to the effect size. \code{'clock'} does the same as \code{'radar'} but uses clock coordinates
-instead of polar coordinates. \code{'scatter'} uses the effect size as y-coordinate and the cumulative relative
+the radius is proportional to the effect size. \code{"clock"} does the same as \code{"radar"} but uses clock coordinates
+instead of polar coordinates. \code{"scatter"} uses the effect size as y-coordinate and the cumulative relative
 importance as x-axis in a classical Scatter plot.}
 
-\item{prop}{Numeric value indicating the maximum proportion of explained importance. Default value is one,
-meaning all predictors are plotted. By setting prop smaller than one the number of
-plotted variables can be reduced. One can also use \code{'n_predictors'} for limiting
+\item{prop}{Numeric value indicating the minimal importance a predictor/baselearner has to have to be plotted.
+Default value is zero, meaning all predictors are plotted. By increasing prop the number of
+plotted variables can be reduced. One can also use \code{n_predictors} for limiting
 the number of variables to be plotted directly.}
 
 \item{n_predictors}{The maximum number of predictors to be plotted. Default is 30.
-Alternative to \code{'prop'}.}
+Alternative to \code{prop}.}
 
 \item{max_char_length}{The maximum character length of a predictor to be printed.
 Default is 5. For long variable names one may adjust this number.}
@@ -43,7 +43,7 @@ Default value is 8.}
 }
 \description{
 Radar or scatter/lineplot visualizing the effects sizes relative to the variable importance
-in a sparse group boosting model. Works also for a regular mboost model.
+in a sparse-group boosting model. Works also for a regular mboost model.
 }
 \examples{
 library(mboost)
@@ -68,5 +68,5 @@ sgb_model <- mboost(formula = sgb_formula, data = df)
 plot_effects(sgb_model)
 }
 \seealso{
-\code{\link[=get_coef]{get_coef()}}, \link{get_varimp} which this function uses.
+\code{\link[=get_coef]{get_coef()}}, \code{\link[=get_varimp]{get_varimp()}} which this function uses.
 }
