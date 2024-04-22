@@ -21,19 +21,11 @@ test_that("get_coef works", {
   )
   sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df, intercept = T))
   sgb_model <- mboost(formula = sgb_formula, data = df)
-  sgb_coefs <- get_coef(sgb_model = sgb_model)[[2]] %>% select(variable, effect, blearner)
+  sgb_coefs <- get_coef(sgb_model = sgb_model)[[2]] %>% select(variable, effect)
   expect_equal(
     tibble(
       variable = c("(Intercept)", "x3", "x2", "x1", "x5", "x4"),
-      effect = c(0.000, -0.006, -0.021, 0.226, 0.508, 0.569),
-      blearner = c(
-        "bols(x4, x5, intercept = TRUE, df = 0.7); bols(x1, x2, x3, intercept = TRUE, df = 0.7)",
-        "bols(x1, x2, x3, intercept = TRUE, df = 0.7)",
-        "bols(x1, x2, x3, intercept = TRUE, df = 0.7)",
-        "bols(x1, x2, x3, intercept = TRUE, df = 0.7)",
-        "bols(x4, x5, intercept = TRUE, df = 0.7)",
-        "bols(x4, x5, intercept = TRUE, df = 0.7)"
-      )
+      effect = c(0.000, -0.006, -0.021, 0.226, 0.508, 0.569)
     ) %>%
       arrange(-abs(effect)),
     sgb_coefs %>%

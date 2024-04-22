@@ -16,15 +16,20 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-`sgboost` is an implementation of the sparse-group boosting [^1] in conjunction with the R-package `mboost`.
-In the fitting process, a formula object defining group base learners and individual base learners is utilized.
-Regularization is based on the degrees of freedom of an individual baselearners
-$df(\lambda)$ and group baselearners $df(\lambda^{(g)})$,
+`sgboost` is an implementation of the sparse-group boosting [^1] to be used in conjunction with the R-package `mboost`. In the fitting process, a formula object defining group base-learners and individual base-learners is used.
+Regularization is based on the degrees of freedom of an individual base-learners
+$df(\lambda)$ and group base-learners $df(\lambda^{(g)})$,
 such that $df(\lambda) = \alpha$ and $df(\lambda^{(g)}) = 1- \alpha$. 
 Sparse-group boosting serves as an alternative method to sparse-group lasso, employing boosted Ridge regression.
 
 
 # Installation
+
+You can install the released version of sgboost from [CRAN](https://CRAN.R-project.org) with:
+
+```{r, echo = TRUE, eval = FALSE}
+install.packages("sgboost")
+```
 
 You can install the development version of sgboost from [GitHub](https://github.com/) with:
 
@@ -93,19 +98,19 @@ group_df <- data.frame(
 The sparse-group-boosting problem is formulated as the sum of mean squared error (linear regression) or logistic loss (logistic regression) within each boosting iteration:
 
 * Linear regression: 
-    + Group baselearner: \newline $$\min_{g \leq G}\min_{\beta^{(g)} \in \mathbb{R}^p}\left(\frac{1}{2n} \rVert u - X^{(g)}\beta^{(g)}\rVert_2^2 + \lambda^{(g)} \rVert\beta^{(g)}\rVert_2^2 \right)$$
-    + Individual baselearner: \newline  $$\min_{g \leq G, j \leq p_g}\min_{\beta^{(g)}_j\in\mathbb{R}}\left(\frac{1}{2n} \rVert u - X^{(g)}_j\beta^{(g)}_j\rVert_2^2 + \lambda^{(g)}_j \rVert\beta^{(g)}_j\rVert_2^2 \right)$$
+    + Group base-learner: \newline $$\min_{g \leq G}\min_{\beta^{(g)} \in \mathbb{R}^p}\left(\frac{1}{2n} \rVert u - X^{(g)}\beta^{(g)}\rVert_2^2 + \lambda^{(g)} \rVert\beta^{(g)}\rVert_2^2 \right)$$
+    + Individual base-learner: \newline  $$\min_{g \leq G, j \leq p_g}\min_{\beta^{(g)}_j\in\mathbb{R}}\left(\frac{1}{2n} \rVert u - X^{(g)}_j\beta^{(g)}_j\rVert_2^2 + \lambda^{(g)}_j \rVert\beta^{(g)}_j\rVert_2^2 \right)$$
 
 * Logistic regression: 
-    + Group baselearner \newline
+    + Group base-learner \newline
 $$\min_{g \in G}\min_{\beta^{(g)}\in\mathbb{R}}\left(\frac{1}{2n}\sum_{i=1}^n \log\left(1 + \exp\left(-y_i(x^{(g)})_i^\top\beta^{(g)}\right)\right) + \lambda^{(g)} \rVert\beta^{(g)}\rVert_2^2 \right) \qquad$$
-    + Individual baselearners
+    + Individual base-learners
 $$\min_{g \in G, j \in p_g}\min_{\beta^{(g)}_j\in\mathbb{R}}\left(\frac{1}{2n}\sum_{i=1}^n \log\left(1 + \exp\left(-y_i(x^{(g)})_{ij}^\top\beta^{(g)}_j\right)\right) + \lambda^{(g)}_j \rVert\beta^{(g)}_j\rVert_2^2 \right) \qquad$$
 where 
 * $df(\lambda^{(g)}_j) = \alpha$
 * $df(\lambda^{g}) = 1-\alpha$
 * $df(\lambda) = tr(2H_\lambda-H_\lambda^TH_\lambda)$
-* $H$ is the Ridge Hat matrix of a baselearner
+* $H$ is the Ridge Hat matrix of a base-learner
 * $X^{(g)}$ is the submatrix of $X$ with columns corresponding
 to the features in group $g$.
 
@@ -114,7 +119,7 @@ the features in group $g$.
 
 * $p_g$ is the number of predictors in group $g$.
 
-* $\alpha$ adjusts the weight between group and individual baselearners.
+* $\alpha$ adjusts the weight between group and individual base-learners.
 
 * $\lambda^{(g)}, \lambda^{(g)}_j$ Ridge penalty parameters.
 * $u$ is the negative gradient vector from the previous boosting iteration.
@@ -138,10 +143,10 @@ the variables in the modelling data.frame to be used. Note that not all variable
 on the modelling data.frame have to be in group_df. These could be ID, timestamp variables or 
 additional information one does not want to use in the model. 
 * `outcome_name`: Name of the outcome variable in the modelling data.frame
-* `intercept`: Should an intercept be used for all baselearners? If the data is
+* `intercept`: Should an intercept be used for all base-learners? If the data is
 not centered, one should include use `intercept = TRUE`. Note that in this case,
-individual baselearners will be groups of size two, and the group size of group
-baselearners increases by one. 
+individual base-learners will be groups of size two, and the group size of group
+base-learners increases by one. 
 
 ```{r, eval=TRUE}
 sgb_formula_linear <- create_formula(
@@ -189,8 +194,8 @@ In this example, the lowest out-of-sample risk is obtained at 320 (linear) and
 ## Interpreting and plotting a sparse-group boosting model
 
 `sgboost` has useful functions to understand sparse-group boosting models and 
-reflect that final model estimates of a specific variable in the dataset can be
-attributed to group baselearners as well as individual baseleraners depending
+reflects that final model estimates of a specific variable in the dataset can be
+attributed to group base-learners as well as individual baseleraners depending
 on the boosting iteration
 
 ### Variable importance
@@ -199,10 +204,10 @@ A good starting point for understanding a sparse-group boosting model is the
 variable importance. In the context of boosting the variable importance can be 
 defined as the relative contribution of each predictor to the overall reduction
 of the loss function (negative log likelihood).
-`get_varimp` returns the variable importance of each baselearner/predictor 
+`get_varimp` returns the variable importance of each base-learner/predictor 
 selected in throughout the boosting process. Note that in the case of the selection
 of a group and an individual variable - call it $x_1$ - from the same group
--$x_1, x_2, ... x_p$ -, both baselearners (predictors) will have an associated
+-$x_1, x_2, ... x_p$ -, both base-learners (predictors) will have an associated
 variable importance as defined before. This allows us to differentiate between 
 the individual contribution of $x_1$ its own variable and the contribution of the 
 group $x_1$ is part of as a group construct. It is not possible to compute the 
