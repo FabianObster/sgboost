@@ -5,12 +5,16 @@
 #' boosted Ridge Regression with mixing parameter `alpha`. The formula consists of a
 #' group baselearner part with degrees of freedom
 #' 1-`alpha` and individual baselearners with degrees of freedom `alpha`.
+#' Groups should be defined through `group_df`. The corresponding modeling data
+#' should not contain categorical variables with more than two categories,
+#' as they are then treated as a group only.
 #'
 #' @param alpha Numeric mixing parameter. For alpha = 0 only group baselearners and for
 #' alpha = 1 only individual baselearners are defined.
 #' @param group_df input data.frame containing variable names with group structure.
 #' @param var_name Name of column in group_df containing the variable names
-#' to be used as predictors. Default is `"var_name"`
+#' to be used as predictors. Default is `"var_name"`. should not contain categorical
+#' variables with more than two categories, as they are then treated as a group only.
 #' @param group_name Name of column in group_df indicating the group structure of the variables.
 #' Default is `"group_name`.
 #' @param blearner Type of baselearner. Default is `'bols'`.
@@ -57,6 +61,10 @@ create_formula <- function(alpha = 0.3, group_df = NULL, blearner = "bols",
   if (blearner != "bols") {
     warning("passing a baselearner other than bols does not guarantee
             that mboost() returns a sparse-group boosting model")
+  }
+  if(any(table(group_df$group_name)) == 1){
+    warning("there is a group containing only one variable.
+            It will be treated as individual variable and as group")
   }
   var_names <- group_names <- NULL
   formula_df <- group_df

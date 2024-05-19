@@ -28,7 +28,8 @@ alpha = 1 only individual baselearners are defined.}
 Default is \verb{"group_name}.}
 
 \item{var_name}{Name of column in group_df containing the variable names
-to be used as predictors. Default is \code{"var_name"}}
+to be used as predictors. Default is \code{"var_name"}. should not contain categorical
+variables with more than two categories, as they are then treated as a group only.}
 
 \item{intercept}{Logical, should intercept be used?}
 }
@@ -41,6 +42,9 @@ Creates a \code{mboost} formula that allows to fit a sparse-group boosting model
 boosted Ridge Regression with mixing parameter \code{alpha}. The formula consists of a
 group baselearner part with degrees of freedom
 1-\code{alpha} and individual baselearners with degrees of freedom \code{alpha}.
+Groups should be defined through \code{group_df}. The corresponding modeling data
+should not contain categorical variables with more than two categories,
+as they are then treated as a group only.
 }
 \examples{
 library(mboost)
