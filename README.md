@@ -7,7 +7,7 @@
 
 Implements the sparse-group boosting in to be used conjunction with the
 R-package `mboost`. A formula object defining group base learners and
-individual base learners is used in the fitting process.. Regularization
+individual base learners is used in the fitting process. Regularization
 is based on the degrees of freedom of individual baselearners
 $df(\lambda)$ and the ones of group baselearners $df(\lambda^{(g)})$,
 such that $df(\lambda) = \alpha$ and $df(\lambda^{(g)}) = 1- \alpha$.
@@ -53,6 +53,11 @@ group_df <- data.frame(
 )
 
 sgb_formula <- as.formula(create_formula(alpha = 0.3, group_df = group_df))
+#> Warning in create_formula(alpha = 0.3, group_df = group_df): there is a group containing only one variable.
+#>             It will be treated as individual variable and as group
+```
+
+``` r
 sgb_model <- mboost(formula = sgb_formula, data = df)
 plot_path(sgb_model)
 ```
