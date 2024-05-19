@@ -48,13 +48,23 @@ plot_path <- function(sgb_model, max_char_length = 5, base_size = 8) {
       is.numeric(max_char_length) & max_char_length > 0
   )
   sgb_coef_path <- get_coef_path(sgb_model)
-  plotdata <- sgb_coef_path$aggregated %>%
-    dplyr::mutate(
+  plotdata <- sgb_coef_path$aggregated
+  blearners <- names(sgb_model$baselearner)
+  blearners <- str_replace(blearners, ",[^,]*=.*", "")
+  blearners <- str_replace(blearners, "bols\\(", "")
+  blearners <- str_replace(blearners, "\\)", "")
+  blearners <- str_detect(blearners, ',')
+  is_group <- which(blearners, blearners)
+  temp_df <- data.frame(selected = sgb_model$xselect(),
+                        iteration = 1:mboost::mstop(sgb_model)) %>%
+    dplyr::transmute(
       type = dplyr::case_when(
-        stringr::str_detect(.data$predictor, ",") ~ "group",
-        T ~ "individual"
-      )
+        selected %in% is_group ~ 'group',  T ~ 'individual'
+      ),
+      iteration = .data$iteration
     )
+  plotdata <- plotdata %>%
+    dplyr::left_join(temp_df, by = 'iteration')
   plot_out <- plotdata %>%
     ggplot2::ggplot(aes(x = .data$iteration, y = .data$effect, group = .data$variable, color = .data$type)) +
     ggplot2::geom_point(aes(color = .data$type), size = 0.2) +
