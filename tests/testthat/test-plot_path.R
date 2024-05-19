@@ -8,8 +8,10 @@ test_that("plot path works", {
   )
   X <- matrix(data = rnorm(20000, mean = 0, sd = 1), 100, 200)
   df <- data.frame(X) %>%
-    mutate(y = X %*% beta+rnorm(100, mean = 0, sd = 1)) %>%
-    mutate_all(function(x){as.numeric(scale(x))})
+    mutate(y = X %*% beta + rnorm(100, mean = 0, sd = 1)) %>%
+    mutate_all(function(x) {
+      as.numeric(scale(x))
+    })
   group_df <- data.frame(group_name = rep(1:40, each = 5), variable_name = colnames(df)[1:200])
 
   # Input data.frames
