@@ -1,4 +1,4 @@
-# sgboost (development version)
+# sgboost 0.1.4
 
 # sgboost 0.1.3
 
