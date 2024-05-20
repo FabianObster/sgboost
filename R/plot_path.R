@@ -85,7 +85,7 @@ plot_path <- function(sgb_model, max_char_length = 5, base_size = 8) {
     dplyr::arrange(.data$iteration) %>%
     mutate(type_selected = dplyr::case_when(
       type_selected %in% c("group; NA", "NA; group") ~ "group",
-      type_selected %in% c("individual; NA", "NA; individual") ~ "group",
+      type_selected %in% c("individual; NA", "NA; individual") ~ "individual",
       type_selected %in% c("NA", "NA; NA") ~ "not selected",
       T ~ .data$type_selected
     ))

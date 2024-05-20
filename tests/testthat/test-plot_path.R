@@ -19,12 +19,11 @@ test_that("plot path works", {
     alpha = 0.4, group_df = group_df, outcome_name = "y", intercept = FALSE,
     group_name = "group_name", var_name = "variable_name",
   )
-  labels(terms(sgb_formula))[[1]]
-  labels(terms(sgb_formula))[[201]]
 
   sgb_model <- mboost(
     formula = sgb_formula, data = df,
     control = boost_control(nu = 1, mstop = 600)
   )
-  plot_path(sgb_model[50])
+  path <- sgboost::get_coef_path(sgb_model[150])
+  plot_path(sgb_model[150])
 })

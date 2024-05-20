@@ -62,7 +62,7 @@ create_formula <- function(alpha = 0.3, group_df = NULL, blearner = "bols",
     warning("passing a baselearner other than bols does not guarantee
             that mboost() returns a sparse-group boosting model")
   }
-  if (any(table(group_df$group_name)) == 1) {
+  if (any(table(group_df$group_name) == 1)) {
     warning("there is a group containing only one variable.
             It will be treated as individual variable and as group")
   }
