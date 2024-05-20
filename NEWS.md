@@ -1,3 +1,5 @@
+# sgboost (development version)
+
 # sgboost 0.1.3
 
 * plot_path() indicates now also when a specific variable was not updated.
