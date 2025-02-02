@@ -11,6 +11,7 @@ create_formula(
   outcome_name = "y",
   group_name = "group_name",
   var_name = "var_name",
+  group_weights = "group_weights",
   intercept = FALSE
 )
 }
@@ -30,6 +31,8 @@ Default is \verb{"group_name}.}
 \item{var_name}{Name of column in group_df containing the variable names
 to be used as predictors. Default is \code{"var_name"}. should not contain categorical
 variables with more than two categories, as they are then treated as a group only.}
+
+\item{group_weights}{Optional name of the column in group_df indication the group weights.}
 
 \item{intercept}{Logical, should intercept be used?}
 }

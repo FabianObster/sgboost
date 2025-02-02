@@ -64,15 +64,21 @@ create_formula <- function(alpha = 0.3, group_df = NULL, blearner = "bols",
   }
   var_names <- group_names <- NULL
   formula_df <- group_df
+  if(is.null(formula_df$group_weights)){
+    formula_df$group_weights <- 1
+  }
+  stopifnot("group weights must be numeric" = is.numeric(formula_df$group_weights))
+  stopifnot("group weights must between zero and one" = (all(formula_df$group_weights >= 0) & all(group_df$group_weights <= 1)))
   formula_df$var_names <- group_df[[var_name]]
   formula_df$group_names <- group_df[[group_name]]
   formula_group <- formula_df %>%
-    dplyr::select(var_names, group_names) %>%
+    dplyr::select(var_names, group_names, group_weights) %>%
     dplyr::group_by(.data$group_names) %>%
-    dplyr::summarize(var_names = paste0(.data$var_names, collapse = " , ")) %>%
+    dplyr::summarize(var_names = paste0(.data$var_names, collapse = " , "),
+                     group_weights = mean(group_weights)) %>%
     dplyr::mutate(term = paste0(
       blearner, "(", .data$var_names, ", df = ",
-      (1 - alpha), ", intercept=", intercept, ")"
+      (1 - alpha)*group_weights, ", intercept=", intercept, ")"
     ))
   formula <- paste0(paste0(
     blearner, "(", formula_df$var_names, ", df = ",
@@ -89,3 +95,4 @@ create_formula <- function(alpha = 0.3, group_df = NULL, blearner = "bols",
   final_formula <- paste0(outcome_name, "~", final_formula)
   return(formula(final_formula))
 }
+
