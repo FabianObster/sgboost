@@ -26,4 +26,6 @@ test_that("plot path works", {
   )
   path <- sgboost::get_coef_path(sgb_model[150])
   plot_path(sgb_model[150])
+  expect_error(plot_path(sgb_model = sgb_model, max_char_length = -1),
+               "max_char_length must be a positive number")
 })

@@ -17,6 +17,7 @@
 #' variables with more than two categories, as they are then treated as a group only.
 #' @param group_name Name of column in group_df indicating the group structure of the variables.
 #' Default is `"group_name`.
+#' @param group_weights Optional name of the column in group_df indication the group weights.
 #' @param blearner Type of baselearner. Default is `'bols'`.
 #' @param outcome_name String indicating the name of dependent variable. Default is `"y"`
 #' @param intercept Logical, should intercept be used?
@@ -49,7 +50,7 @@
 #' summary(sgb_model)
 create_formula <- function(alpha = 0.3, group_df = NULL, blearner = "bols",
                            outcome_name = "y", group_name = "group_name",
-                           var_name = "var_name", intercept = FALSE) {
+                           var_name = "var_name", group_weights = "group_weights", intercept = FALSE) {
   stopifnot("Mixing parameter alpha must be numeric" = is.numeric(alpha))
   stopifnot("Mixing parameter alpha must between zero and one" = (alpha >= 0 & alpha <= 1))
   stopifnot("group_df must be a data.frame" = is.data.frame(group_df))
@@ -64,15 +65,21 @@ create_formula <- function(alpha = 0.3, group_df = NULL, blearner = "bols",
   }
   var_names <- group_names <- NULL
   formula_df <- group_df
+  if(is.null(formula_df$group_weights)){
+    formula_df$group_weights <- 1
+  }
+  stopifnot("group weights must be numeric" = is.numeric(formula_df$group_weights))
+  stopifnot("group weights must between zero and one" = (all(formula_df$group_weights >= 0) & all(group_df$group_weights <= 1)))
   formula_df$var_names <- group_df[[var_name]]
   formula_df$group_names <- group_df[[group_name]]
   formula_group <- formula_df %>%
-    dplyr::select(var_names, group_names) %>%
+    dplyr::select(var_names, group_names, group_weights) %>%
     dplyr::group_by(.data$group_names) %>%
-    dplyr::summarize(var_names = paste0(.data$var_names, collapse = " , ")) %>%
+    dplyr::summarize(var_names = paste0(.data$var_names, collapse = " , "),
+                     group_weights = mean(.data$group_weights)) %>%
     dplyr::mutate(term = paste0(
       blearner, "(", .data$var_names, ", df = ",
-      (1 - alpha), ", intercept=", intercept, ")"
+      (1 - alpha)*.data$group_weights, ", intercept=", intercept, ")"
     ))
   formula <- paste0(paste0(
     blearner, "(", formula_df$var_names, ", df = ",
@@ -89,3 +96,4 @@ create_formula <- function(alpha = 0.3, group_df = NULL, blearner = "bols",
   final_formula <- paste0(outcome_name, "~", final_formula)
   return(formula(final_formula))
 }
+
