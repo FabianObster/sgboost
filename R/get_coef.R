@@ -46,13 +46,13 @@ get_coef <- function(sgb_model) {
     lapply(function(i) {
       as.data.frame(sgb_model$coef()[[i]]) %>%
         tibble::rownames_to_column() %>%
-        mutate(blearner = names(sgb_model$coef())[i])
+        dplyr::mutate(blearner = names(sgb_model$coef())[i])
     }) %>%
     dplyr::bind_rows() %>%
-    tibble()
+    tibble::tibble()
   colnames(coef_df)[1:2] <- c("variable", "effect")
   coef_df <- coef_df %>%
-    mutate(
+    dplyr::mutate(
       predictor = str_replace(.data$blearner, ",[^,]*=.*", ""),
       predictor = str_replace(.data$predictor, "bols\\(", ""),
       predictor = str_replace(.data$predictor, "\\)", ""),
