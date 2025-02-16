@@ -17,7 +17,8 @@ balance(
   red_fact = 0.9,
   min_weights = 0.01,
   max_weights = 0.99,
-  intercept = TRUE
+  intercept = TRUE,
+  verbose = F
 )
 }
 \arguments{
@@ -52,15 +53,16 @@ meaning the loss increases. Default is \code{0.9}}
 \item{max_weights}{The maximum weight size to be used. Default is \code{0.99}}
 
 \item{intercept}{Logical, should intercept be used?}
+
+\item{verbose}{Logical, should iteration be printed?}
 }
 \value{
 Character containing the formula to be passed to \code{\link[mboost:gamboost]{mboost::mboost()}}
 yielding the sparse-group boosting for a given value mixing parameter \code{alpha}.
 }
 \description{
-Groups should be defined through \code{group_df}. The corresponding modeling data
-should not contain categorical variables with more than two categories,
-as they are then treated as a group only.
+Returns optimal degrees of freedom for group boosting to achieve more balanced variables selection.
+Groups should be defined through \code{group_df}. Each base_learner
 }
 \examples{
 library(mboost)

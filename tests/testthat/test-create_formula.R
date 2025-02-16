@@ -12,7 +12,7 @@ test_that("create_formula works", {
     create_formula(alpha = -0.5),
     "Mixing parameter alpha must between zero and one"
   )
-   expect_error(
+  expect_error(
     create_formula(alpha = -0.5),
     "Mixing parameter alpha must between zero and one"
   )
@@ -61,7 +61,7 @@ test_that("create_formula works", {
     data.frame(
       group_name = c(1, 1, 2),
       var_name = c("x1", "x2", "x3"),
-      group_weights = c(0.3,0.3,0.5)
+      group_weights = c(0.3, 0.3, 0.5)
     )
   expect_equal(
     create_formula(alpha = 0, group_df = group_df, group_name = "group_name", var_name = "var_name"),

@@ -14,6 +14,5 @@ test_that("bance works", {
     create_formula(group_df = data.frame(group = 1)),
     "group_name and var_name have to be columns of group_df"
   )
-  expect_equal(round(balances$opt_weights$error[1],1), 0)
+  expect_equal(round(balances$opt_weights$error[1], 1), 0)
 })
-

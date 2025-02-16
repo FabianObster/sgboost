@@ -23,11 +23,12 @@
 #' @param blearner Type of baselearner. Default is `'bols'`.
 #' @param outcome_name String indicating the name of dependent variable. Default is `"y"`
 #' @param intercept Logical, should intercept be used?
+#' @param verbose Logical, should iteration be printed?
 #' @importFrom dplyr select group_by mutate filter bind_rows case_when %>%
 #' @importFrom stringr str_replace_all
 #' @importFrom rlang .data
 #' @importFrom mboost mboost boost_control
-#' @importFrom stats rnorm
+#' @importFrom stats rnorm as.formula
 #' @return Character containing the formula to be passed to [mboost::mboost()]
 #'  yielding the sparse-group boosting for a given value mixing parameter `alpha`.
 #' @export
@@ -57,7 +58,7 @@ balance <- function(df = NULL, group_df = NULL, blearner = "bols",
                            outcome_name = "y", group_name = "group_name",
                            var_name = "var_name", n_reps = 3000, iterations = 15,
                     nu = 0.5, red_fact = 0.9, min_weights = 0.01,
-                    max_weights = 0.99, intercept = TRUE) {
+                    max_weights = 0.99, intercept = TRUE, verbose = F) {
   stopifnot("group_df must be a data.frame" = is.data.frame(group_df))
   stopifnot(
     "group_name and var_name have to be columns of group_df" =
@@ -83,11 +84,11 @@ balance <- function(df = NULL, group_df = NULL, blearner = "bols",
   for(iteration in 2:iterations){
     mb_formula <- create_formula(alpha = 0, group_df = iter_df %>%
                                    dplyr::filter(.data$iter == iteration-1), group_weights = 'group_weights',
-                                 outcome_name = 'y_sim', intercept = T)
+                                 outcome_name = 'y_sim', intercept = intercept)
     sel <- vector()
     for(reps in 1:n_reps){
       sim_df <- sample_data(df)
-      mb_model <- mboost::mboost(as.formula(mb_formula), data = sim_df,
+      mb_model <- mboost::mboost(stats::as.formula(mb_formula), data = sim_df,
                          control = boost_control(mstop = 1))
       sel <- c(sel,get_varimp(mb_model)$varimp$predictor %>% unique())
     }
@@ -102,7 +103,7 @@ balance <- function(df = NULL, group_df = NULL, blearner = "bols",
              corr = 1/length(unique(group_df$group_name))-.data$perc,
              error = sum(.data$corr^2)) %>%
       dplyr::right_join(iter_df %>% dplyr::filter(.data$iter == iteration-1) %>%
-                          dplyr::select(-n, -perc, -corr,-error),
+                          dplyr::select(-'n', -'perc', -'corr',-'error'),
                  by = c('group_name', 'var_name', 'iter')) %>%
       dplyr::group_by(group_name) %>%
       dplyr::mutate(perc = max(.data$perc,na.rm=T), n = max(.data$n, na.rm = T),
@@ -132,9 +133,9 @@ balance <- function(df = NULL, group_df = NULL, blearner = "bols",
     }
     iter_df <- iter_df %>%
       dplyr::bind_rows(new_iter %>%
-                  dplyr::select(-n, -perc, -corr,-error) %>%
+                  dplyr::select(-'n', -'perc', -'corr',-'error') %>%
                   dplyr::mutate(iter = iteration))
-    print(iteration)
+    if(verbose){print(iteration)}
   }
-  return(list('selection_df' = iter_df, 'opt_weights' = iter_df %>% dplyr::filter(error == min(.data$error, na.rm = T))))
+  return(list('selection_df' = iter_df, 'opt_weights' = iter_df %>% dplyr::filter(.data$error == min(.data$error, na.rm = T))))
 }
