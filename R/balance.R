@@ -55,8 +55,8 @@
 #' sgb_model <- mboost(formula = sgb_formula, data = df)
 #' summary(sgb_model)
 balance <- function(df = NULL, group_df = NULL, blearner = "bols",
-                           outcome_name = "y", group_name = "group_name",
-                           var_name = "var_name", n_reps = 3000, iterations = 15,
+                    outcome_name = "y", group_name = "group_name",
+                    var_name = "var_name", n_reps = 3000, iterations = 15,
                     nu = 0.5, red_fact = 0.9, min_weights = 0.01,
                     max_weights = 0.99, intercept = TRUE, verbose = F) {
   stopifnot("group_df must be a data.frame" = is.data.frame(group_df))
@@ -69,11 +69,11 @@ balance <- function(df = NULL, group_df = NULL, blearner = "bols",
     warning("passing a baselearner other than bols does not guarantee
             that mboost() returns a sparse-group boosting model")
   }
-  sample_data <- function(df, distr_fun = 'normal'){
-    if(distr_fun == 'normal'){
-      ret_df <- df %>% dplyr::mutate(y_sim = rnorm(0,1, n = dim(df)[1]))
-    } else if(distr_fun == 'binomial'){
-      ret_df <- df %>% dplyr::mutate(y_sim = sample(c(0,1), size = dim(df)[1], replace = T))
+  sample_data <- function(df, distr_fun = "normal") {
+    if (distr_fun == "normal") {
+      ret_df <- df %>% dplyr::mutate(y_sim = rnorm(0, 1, n = dim(df)[1]))
+    } else if (distr_fun == "binomial") {
+      ret_df <- df %>% dplyr::mutate(y_sim = sample(c(0, 1), size = dim(df)[1], replace = T))
     }
     return(ret_df)
   }
@@ -81,61 +81,74 @@ balance <- function(df = NULL, group_df = NULL, blearner = "bols",
     dplyr::mutate(group_weights = 0.5, iter = 1, n = NA, perc = NA, corr = NA, error = NA)
   opt_iter <- 1
   set.seed(1)
-  for(iteration in 2:iterations){
-    mb_formula <- create_formula(alpha = 0, group_df = iter_df %>%
-                                   dplyr::filter(.data$iter == iteration-1), group_weights = 'group_weights',
-                                 outcome_name = 'y_sim', intercept = intercept)
+  for (iteration in 2:iterations) {
+    mb_formula <- create_formula(
+      alpha = 0, group_df = iter_df %>%
+        dplyr::filter(.data$iter == iteration - 1), group_weights = "group_weights",
+      outcome_name = "y_sim", intercept = intercept
+    )
     sel <- vector()
-    for(reps in 1:n_reps){
+    for (reps in 1:n_reps) {
       sim_df <- sample_data(df)
-      mb_model <- mboost::mboost(stats::as.formula(mb_formula), data = sim_df,
-                         control = boost_control(mstop = 1))
-      sel <- c(sel,get_varimp(mb_model)$varimp$predictor %>% unique())
+      mb_model <- mboost::mboost(stats::as.formula(mb_formula),
+        data = sim_df,
+        control = boost_control(mstop = 1)
+      )
+      sel <- c(sel, get_varimp(mb_model)$varimp$predictor %>% unique())
     }
-    sel_df <- data.frame(rep = 1:n_reps,selection = 1, var_name = stringr::str_replace_all(sel, ',.*', '')) %>%
-      dplyr::right_join(group_df, by = 'var_name') %>%
+    sel_df <- data.frame(rep = 1:n_reps, selection = 1, var_name = stringr::str_replace_all(sel, ",.*", "")) %>%
+      dplyr::right_join(group_df, by = "var_name") %>%
       dplyr::filter(!is.na(.data$rep))
     sel_df <- sel_df %>%
       dplyr::group_by(.data$group_name, .data$var_name) %>%
       dplyr::tally() %>%
       dplyr::ungroup() %>%
-      dplyr::mutate(perc = .data$n/sum(.data$n), iter = iteration-1,
-             corr = 1/length(unique(group_df$group_name))-.data$perc,
-             error = sum(.data$corr^2)) %>%
-      dplyr::right_join(iter_df %>% dplyr::filter(.data$iter == iteration-1) %>%
-                          dplyr::select(-'n', -'perc', -'corr',-'error'),
-                 by = c('group_name', 'var_name', 'iter')) %>%
+      dplyr::mutate(
+        perc = .data$n / sum(.data$n), iter = iteration - 1,
+        corr = 1 / length(unique(group_df$group_name)) - .data$perc,
+        error = sum(.data$corr^2)
+      ) %>%
+      dplyr::right_join(
+        iter_df %>% dplyr::filter(.data$iter == iteration - 1) %>%
+          dplyr::select(-"n", -"perc", -"corr", -"error"),
+        by = c("group_name", "var_name", "iter")
+      ) %>%
       dplyr::group_by(group_name) %>%
-      dplyr::mutate(perc = max(.data$perc,na.rm=T), n = max(.data$n, na.rm = T),
-             iter = max(.data$iter, na.rm = T), corr = max(.data$corr, na.rm = T),
-             error = max(.data$error, na.rm = T))
+      dplyr::mutate(
+        perc = max(.data$perc, na.rm = T), n = max(.data$n, na.rm = T),
+        iter = max(.data$iter, na.rm = T), corr = max(.data$corr, na.rm = T),
+        error = max(.data$error, na.rm = T)
+      )
 
 
-    iter_df <- iter_df %>% dplyr::filter(.data$iter != iteration-1) %>% dplyr::bind_rows(sel_df)
-    if(utils::tail(iter_df,1)$error == min(iter_df$error)){
-      opt_iter <- iteration-1
+    iter_df <- iter_df %>%
+      dplyr::filter(.data$iter != iteration - 1) %>%
+      dplyr::bind_rows(sel_df)
+    if (utils::tail(iter_df, 1)$error == min(iter_df$error)) {
+      opt_iter <- iteration - 1
       new_iter <- sel_df %>%
-        dplyr::mutate(group_weights = .data$group_weights+nu*.data$corr)
-    } else{
-      nu <- nu*red_fact
+        dplyr::mutate(group_weights = .data$group_weights + nu * .data$corr)
+    } else {
+      nu <- nu * red_fact
       new_iter <- sel_df %>%
-        dplyr::mutate(group_weights = .data$group_weights+nu*.data$corr)
+        dplyr::mutate(group_weights = .data$group_weights + nu * .data$corr)
 
       new_iter$opt_weights <- dplyr::filter(iter_df, .data$iter == opt_iter)$group_weights
       new_iter$opt_corr <- dplyr::filter(iter_df, .data$iter == opt_iter)$corr
       new_iter <- new_iter %>%
-        dplyr::mutate(group_weights = 0.3*.data$opt_weights+0.7*(.data$group_weights+nu*.data$corr))
+        dplyr::mutate(group_weights = 0.3 * .data$opt_weights + 0.7 * (.data$group_weights + nu * .data$corr))
     }
-    if(any(new_iter$group_weights > 1 | new_iter$group_weights < 0 )){
-
+    if (any(new_iter$group_weights > 1 | new_iter$group_weights < 0)) {
       new_iter <- new_iter %>%
         dplyr::mutate(group_weights = dplyr::case_when(.data$group_weights >= 1 ~ max_weights, .data$group_weights > 0 ~ min_weights))
     }
     iter_df <- iter_df %>%
       dplyr::bind_rows(new_iter %>%
-                  dplyr::select(-'n', -'perc', -'corr',-'error') %>%
-                  dplyr::mutate(iter = iteration))
-    if(verbose){print(iteration)}
+        dplyr::select(-"n", -"perc", -"corr", -"error") %>%
+        dplyr::mutate(iter = iteration))
+    if (verbose) {
+      print(iteration)
+    }
   }
-  return(list('selection_df' = iter_df, 'opt_weights' = iter_df %>% dplyr::filter(.data$error == min(.data$error, na.rm = T))))
+  return(list("selection_df" = iter_df, "opt_weights" = iter_df %>% dplyr::filter(.data$error == min(.data$error, na.rm = T))))
 }
